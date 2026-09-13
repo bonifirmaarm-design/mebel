@@ -254,21 +254,23 @@ input{caret-color:var(--accent)}
    column on purpose; body's overflow-x crops it. */
 @media(max-width:720px){
   .hero .wrap{display:flex;flex-direction:column}
-  .mark{order:2;width:136%;justify-content:flex-start;gap:0;margin-top:-2vw}
+  /* the name reads in full on a phone; the script sizes it to the column */
+  .mark{order:2;justify-content:space-between;margin-top:-1vw}
   .rail{display:contents}
   .rail__pieces{
     order:1;display:flex;align-items:flex-end;justify-content:space-between;
-    gap:10px;padding-bottom:6px;
+    gap:6px;padding-bottom:6px;
   }
   .rail__claim{
     order:3;align-items:flex-start;padding-top:16px;
     border-top:1px solid var(--line);margin-top:14px;
   }
   .rail__note{order:4;text-align:left;max-width:none;padding-top:10px;margin:0}
-  .hero__seat{margin-top:0;width:34vw}
-  .mini--chair{width:15vw}
-  .mini--table{width:19vw}
-  .mini--sofa{width:25vw}
+  /* four pieces have to share one line, so they are sized to fit it */
+  .hero__seat{margin-top:0;width:30vw}
+  .mini--chair{width:13vw}
+  .mini--table{width:16.5vw}
+  .mini--sofa{width:22vw}
 }
 
 /* ---------- collection ---------- */
