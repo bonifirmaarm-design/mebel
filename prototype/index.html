@@ -1410,6 +1410,10 @@ mark{background:color-mix(in srgb,var(--accent) 20%,transparent);color:inherit;b
         row.classList.add('is-found');
       }
     }
+    /* the query has been answered, so the field starts clean for the next one */
+    field.value = '';
+    clearBtn.hidden = true;
+    panelIn.replaceChildren();
     closeSearch();
   }
 
