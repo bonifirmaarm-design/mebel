@@ -1,0 +1,1597 @@
+<title>VOLNA</title>
+<link rel="stylesheet" href="fonts.css">
+
+<style>
+/* ---------- tokens ---------- */
+:root{
+  --ground:#EFEBE5;
+  --surface:#FBF9F5;
+  --plate:#F1EDE6;
+  --plate-2:#E6E0D6;
+  --ink:#1F1B17;
+  --ink-2:#6C635A;
+  --ink-3:#6F665C;
+  --line:#D8D0C4;
+  --accent:#7A4A22;
+  --on-accent:#FBF9F5;
+  --dark:#2A251F;
+  --on-dark:#EFEBE5;
+  --on-dark-2:#9C9389;
+  --dark-line:#413A32;
+
+  --r:16px;
+  --pad:clamp(16px,3.4vw,40px);
+  --gap:clamp(10px,1.3vw,16px);
+  --max:1280px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+
+  /* Display face, chosen by the client from a live comparison on the page. */
+  --display:"Unbounded",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#16120F;--surface:#1E1914;--plate:#E6E0D6;--plate-2:#D5CDC0;
+    --ink:#EFEBE5;--ink-2:#A79D91;--ink-3:#8C8175;--line:#312A23;
+    --accent:#C08F5E;--on-accent:#17110C;--dark:#0E0B09;--on-dark:#EFEBE5;--on-dark-2:#9C9389;--dark-line:#2A231C;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#16120F;--surface:#1E1914;--plate:#E6E0D6;--plate-2:#D5CDC0;
+  --ink:#EFEBE5;--ink-2:#A79D91;--ink-3:#8C8175;--line:#312A23;
+  --accent:#C08F5E;--on-accent:#17110C;--dark:#0E0B09;--on-dark:#EFEBE5;--on-dark-2:#9C9389;--dark-line:#2A231C;
+}
+
+/* ---------- base ---------- */
+*{box-sizing:border-box}
+/* the ground is painted on the root as well as the body, so nothing composites
+   against the host's own background */
+:root{background:var(--ground);color:var(--ink);color-scheme:light dark}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:"Onest",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+/* The phone wordmark deliberately runs past the right edge. `clip` crops it
+   without making the page a horizontal scroll container, which `hidden` on
+   body alone does not reliably do. */
+@supports (overflow-x:clip){:root,body{overflow-x:clip}}
+[hidden]{display:none!important}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit;color:inherit;background:none;border:none}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+.wrap{max-width:var(--max);margin-inline:auto;padding-inline:var(--pad)}
+/* the sticky bar would otherwise cover the heading an anchor jumps to */
+section[id]{scroll-margin-top:72px}
+.num{font-variant-numeric:tabular-nums}
+
+/* browser surfaces belong to the palette too */
+::selection{background:var(--accent);color:var(--on-accent)}
+input{caret-color:var(--accent)}
+*{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:999px;border:3px solid var(--ground)}
+::-webkit-scrollbar-thumb:hover{background:var(--ink-3)}
+
+/* Section titles carry the block, so they are set at display size and left
+   aligned (ADAMAS). Caps stay inside the 5–12% letterspacing band; the 26%
+   tracking they had before is what made them read as weak labels. */
+.title{
+  font-family:var(--display);font-weight:500;
+  font-size:clamp(23px,3.5vw,44px);letter-spacing:.045em;text-transform:uppercase;
+  line-height:1.08;margin:0;text-wrap:balance;
+}
+.label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ---------- pill ---------- */
+.pill{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 15px;border-radius:999px;border:1px solid var(--line);
+  font-size:11.5px;letter-spacing:.04em;color:var(--ink-2);
+  transition:border-color .3s var(--ease),color .3s var(--ease);
+  white-space:nowrap;
+}
+.pill:hover{border-color:var(--ink-2);color:var(--ink)}
+.pill--solid,.pill[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+.pill--solid:hover{color:var(--ground)}
+.pill--icon{padding-inline-start:5px}
+.dot{
+  width:24px;height:24px;flex:0 0 24px;border-radius:999px;display:grid;place-items:center;
+  background:var(--accent);color:var(--on-accent);transition:transform .4s var(--ease);
+}
+.pill--icon:hover .dot{transform:rotate(45deg)}
+.dot svg{width:10px;height:10px}
+
+/* ---------- header ---------- */
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hdr{position:sticky;top:0;z-index:70;background:color-mix(in srgb,var(--ground) 90%,transparent);backdrop-filter:blur(12px)}
+.hdr__in{display:flex;align-items:center;gap:clamp(8px,1.6vw,18px);height:58px}
+.hdr__l{display:flex;align-items:center;gap:clamp(6px,1.6vw,18px);flex:1;min-width:0}
+/* search sits close to the pair, and the two icons read as one group */
+.hdr__r{display:flex;align-items:center;gap:10px;flex:1;min-width:0;justify-content:flex-end}
+.hdr__icons{display:flex;align-items:center;gap:2px}
+.hdr a{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);transition:color .3s}
+.hdr a:hover{color:var(--ink)}
+.hdr__logo{
+  font-family:var(--display);font-weight:600;
+  font-size:14px;letter-spacing:.3em;padding-left:.3em;color:var(--ink);white-space:nowrap;
+}
+
+/* every header control clears the 44px touch target */
+.tap{
+  width:44px;height:44px;flex:0 0 44px;border-radius:999px;
+  display:grid;place-items:center;position:relative;color:var(--ink-2);
+  transition:color .3s var(--ease),background .3s var(--ease);
+}
+.tap:hover{color:var(--ink)}
+@media(hover:none){.tap:active{background:color-mix(in srgb,var(--line) 55%,transparent)}}
+/* two strokes, the lower one short — the mark the client picked */
+.burger{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;padding-left:11px}
+.burger i{
+  width:20px;height:1px;background:currentColor;display:block;color:var(--ink);
+  transform-origin:left center;transition:transform .35s var(--ease);
+}
+.burger i:nth-child(2){transform:scaleX(.65)}
+.hdr[data-menu="true"] .burger i{transform-origin:center}
+.hdr[data-menu="true"] .burger i:nth-child(1){transform:translateY(2.5px) rotate(45deg) scaleX(.85)}
+.hdr[data-menu="true"] .burger i:nth-child(2){transform:translateY(-2.5px) rotate(-45deg) scaleX(.85)}
+.ico svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ico__n{
+  position:absolute;top:6px;right:5px;
+  min-width:16px;height:16px;padding-inline:4px;border-radius:999px;
+  display:grid;place-items:center;font-size:10px;line-height:1;
+  background:var(--accent);color:var(--on-accent);
+  transition:scale .3s var(--ease);
+}
+.ico__n[data-empty="true"]{display:none}
+
+.search{
+  display:flex;align-items:center;gap:7px;
+  border:1px solid var(--line);border-radius:999px;padding:7px 13px;width:190px;
+}
+.search input{width:100%;font-size:12px;padding:0;min-width:0}
+.search input::placeholder{color:var(--ink-3)}
+.search input:focus{outline:none}
+.search svg{width:14px;height:14px;flex:0 0 14px;color:var(--ink-3);fill:none;stroke:currentColor;stroke-width:1.5}
+#search-btn{display:none}
+@media(max-width:1000px){.search{width:140px}}
+
+/* off-canvas menu: secondary navigation, phone and tablet only */
+.menu{
+  position:fixed;left:0;right:0;top:58px;z-index:69;
+  max-height:calc(100dvh - 58px);overflow-y:auto;
+  box-shadow:0 24px 40px rgba(31,22,12,.10);
+  background:var(--surface);border-bottom:1px solid var(--line);
+  padding:12px var(--pad) 20px;
+  display:flex;flex-direction:column;
+}
+.menu a{
+  font-family:var(--display);font-size:19px;letter-spacing:.02em;text-transform:none;
+  color:var(--ink);padding-block:12px;border-bottom:1px solid var(--line);
+}
+.menu__foot{display:flex;flex-direction:column;gap:6px;padding-top:16px}
+.menu__foot a{font-family:inherit;font-size:14px;color:var(--ink-2);border:none;padding:0}
+
+@media(max-width:860px){
+  .hdr__l a{display:none}
+  .hdr__logo{flex:1;text-align:center}
+}
+@media(max-width:640px){
+  .search{display:none}
+  #search-btn{display:grid}
+}
+@media(min-width:861px){
+  .burger,.menu{display:none}
+  .hdr__l{gap:22px}
+}
+
+/* ---------- hero ---------- */
+.hero{padding-top:clamp(22px,4vw,52px)}
+.mark{
+  font-family:var(--display);font-weight:700;
+  font-size:clamp(2.8rem,23.5vw,19.5rem);
+  line-height:.8;letter-spacing:-.02em;margin:0;
+  display:flex;justify-content:space-between;
+  position:relative;z-index:1;user-select:none;
+}
+.mark span{display:block;transform-origin:50% 100%}
+
+.rail{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:clamp(10px,2.2vw,30px);
+  border-bottom:1px solid var(--line);padding-bottom:clamp(10px,1.4vw,18px);
+}
+.rail__pieces{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:clamp(10px,2.2vw,30px);flex:1;min-width:0;
+}
+.rail__claim{
+  display:flex;flex-direction:column;gap:2px;flex:0 0 auto;
+  font-family:var(--display);font-weight:500;
+  font-size:clamp(11px,.88vw,11.5px);letter-spacing:.15em;text-transform:uppercase;
+  padding-bottom:4px;
+}
+/* each piece keeps its own footprint, so the row reads as a set of objects */
+.mini{flex:0 0 auto;filter:drop-shadow(0 10px 14px rgba(31,22,12,.13))}
+.mini--chair{width:clamp(42px,5.6vw,82px)}
+.mini--table{width:clamp(54px,7.4vw,108px)}
+.mini--sofa{width:clamp(74px,10.2vw,150px)}
+.hero__seat{
+  width:clamp(118px,17.5vw,262px);flex:0 0 auto;
+  margin-top:clamp(-205px,-13.6vw,-58px);
+  position:relative;z-index:3;
+  filter:drop-shadow(0 26px 32px rgba(31,22,12,.18));
+}
+.rail__note{
+  margin:0 0 4px;max-width:26ch;text-align:right;flex:0 1 auto;
+  font-size:12px;color:var(--ink-2);
+}
+.rail__note a{color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:1px}
+
+/* Tablet: the text wraps under, and the pieces grow so the row stays tied to
+   the letters instead of drifting away from them. */
+@media(max-width:900px){
+  .rail{flex-wrap:wrap}
+  .rail__claim{order:2}
+  .rail__note{order:3;margin-bottom:0}
+  .rail__pieces{order:1;flex:1 1 100%}
+  .rail__claim,.rail__note{padding-top:16px;flex:1 1 auto;max-width:none}
+  .hero__seat{width:23vw;margin-top:-12vw}
+  .mini--chair{width:9vw}
+  .mini--table{width:11.5vw}
+  .mini--sofa{width:15vw}
+}
+
+/* Phone: the KANNO composition — pieces on their own line, then the wordmark
+   running off the right edge, then the claim. The mark is wider than the
+   column on purpose; body's overflow-x crops it. */
+@media(max-width:720px){
+  .hero .wrap{display:flex;flex-direction:column}
+  .mark{order:2;width:136%;justify-content:flex-start;gap:0;margin-top:-2vw}
+  .rail{display:contents}
+  .rail__pieces{
+    order:1;display:flex;align-items:flex-end;justify-content:space-between;
+    gap:10px;padding-bottom:6px;
+  }
+  .rail__claim{
+    order:3;align-items:flex-start;padding-top:16px;
+    border-top:1px solid var(--line);margin-top:14px;
+  }
+  .rail__note{order:4;text-align:left;max-width:none;padding-top:10px;margin:0}
+  .hero__seat{margin-top:0;width:34vw}
+  .mini--chair{width:15vw}
+  .mini--table{width:19vw}
+  .mini--sofa{width:25vw}
+}
+
+/* ---------- collection ---------- */
+.sec{padding-block:clamp(44px,5.6vw,80px)}
+.sec__head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  gap:clamp(16px,3vw,48px);flex-wrap:wrap;
+  margin-bottom:clamp(20px,2.6vw,34px);
+}
+.sec__note{margin:0;font-size:13.5px;color:var(--ink-2);max-width:38ch;text-align:right}
+@media(max-width:700px){.sec__note{text-align:left}}
+.row{display:grid;gap:var(--gap);grid-template-columns:repeat(4,1fr)}
+@media(max-width:1000px){.row{grid-template-columns:repeat(2,1fr)}}
+
+.card__plate{
+  position:relative;overflow:hidden;border-radius:var(--r);background:var(--plate);
+  aspect-ratio:1/1;display:grid;place-items:end center;padding:16% 13% 10%;
+}
+.card__plate img{
+  width:100%;height:100%;object-fit:contain;object-position:bottom;
+  transition:transform .7s var(--ease);
+  filter:drop-shadow(0 14px 18px rgba(31,22,12,.12));
+}
+.card:hover .card__plate img{transform:translateY(-7px) scale(1.03)}
+.card__foot{display:flex;flex-direction:column;gap:2px;padding-top:11px}
+.card__name{font-size:13px}
+.card__price{font-size:12.5px;color:var(--ink-2)}
+
+/* add-to-cart reveals on hover and on keyboard focus */
+.card__add{
+  position:absolute;left:10px;right:10px;bottom:10px;z-index:2;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:10px 14px;border-radius:999px;
+  background:var(--ink);color:var(--ground);
+  font-size:11.5px;letter-spacing:.04em;
+  opacity:0;translate:0 8px;
+  transition:opacity .35s var(--ease),translate .35s var(--ease);
+}
+.card:hover .card__add,.card__add:focus-visible{opacity:1;translate:0 0}
+.card__add[data-state="added"]{background:var(--accent);color:var(--on-accent)}
+@media(hover:none){.card__add{opacity:1;translate:0 0}}
+
+.card__fav{
+  position:absolute;top:10px;right:10px;z-index:2;
+  width:32px;height:32px;border-radius:999px;display:grid;place-items:center;
+  color:#5A5148;transition:color .3s var(--ease),scale .3s var(--ease);
+}
+.card__fav svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5}
+.card__fav:hover{scale:1.12}
+.card__fav[aria-pressed="true"]{color:var(--accent)}
+.card__fav[aria-pressed="true"] svg{fill:currentColor}
+
+.hdr__count{font-variant-numeric:tabular-nums}
+.hdr__count[data-empty="false"]{color:var(--accent)}
+
+/* ---------- how it is made: a statement, a photograph, then the numbers ---- */
+.craft{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.82fr);
+  gap:clamp(20px,3.4vw,56px);align-items:end;
+}
+@media(max-width:860px){.craft{grid-template-columns:1fr}}
+.craft__say{
+  margin:0 0 clamp(6px,1vw,14px);
+  font-family:var(--display);font-weight:300;
+  font-size:clamp(21px,2.9vw,38px);line-height:1.3;letter-spacing:-.01em;
+  text-wrap:balance;max-width:21ch;
+}
+.craft__shot{margin:0;overflow:hidden;border-radius:var(--r);background:var(--plate-2)}
+.craft__shot img{width:100%;aspect-ratio:16/10;object-fit:cover}
+
+.facts{
+  margin:clamp(26px,3.4vw,46px) 0 0;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:clamp(14px,2vw,28px);
+  border-top:1px solid var(--line);padding-top:clamp(16px,2vw,26px);
+}
+@media(max-width:760px){.facts{grid-template-columns:repeat(2,1fr)}}
+.facts > div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.facts dt{
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+}
+.facts dd{
+  margin:0;font-family:var(--display);font-weight:400;
+  font-size:clamp(17px,1.7vw,22px);letter-spacing:-.005em;line-height:1.15;
+}
+.facts p{margin:0;font-size:12.5px;color:var(--ink-2);line-height:1.4}
+
+/* ---------- interiors gallery (ref 3) ---------- */
+/* Every figure in a row stretches to the row's height, so the shortest one
+   never leaves a hole under itself. One frame per row carries an aspect ratio
+   and sets that height; the rest crop to it. */
+.gal{display:grid;gap:clamp(14px,2vw,28px);grid-template-columns:repeat(12,1fr);align-items:stretch}
+.gal figure{margin:0;display:flex;flex-direction:column;min-width:0}
+.gal--a{grid-column:span 7}
+.gal--b{grid-column:span 5}
+.gal--c,.gal--d,.gal--e{grid-column:span 4}
+.gal--a .gal__frame{aspect-ratio:16/10}
+.gal--b .gal__frame{aspect-ratio:4/5}
+@media(max-width:860px){
+  .gal{grid-template-columns:repeat(2,1fr)}
+  .gal--a{grid-column:span 2}
+  .gal--b,.gal--c,.gal--d,.gal--e{grid-column:span 1}
+}
+@media(max-width:520px){
+  .gal{grid-template-columns:1fr}
+  .gal--a,.gal--b,.gal--c,.gal--d,.gal--e{grid-column:span 1}
+}
+.gal__frame{
+  position:relative;overflow:hidden;border-radius:var(--r);background:var(--plate-2);
+  flex:1;min-height:0;aspect-ratio:4/3;
+}
+.gal__frame img{width:100%;height:100%;object-fit:cover;transition:scale .9s var(--ease)}
+.gal figure:hover .gal__frame img{scale:1.035}
+/* the room name rides on the photograph (ADAMAS), the products sit below it */
+.gal__tag{
+  position:absolute;top:12px;left:12px;z-index:2;
+  padding:7px 14px;border-radius:999px;
+  background:color-mix(in srgb,#FBF9F5 84%,transparent);
+  backdrop-filter:blur(8px);
+  font-size:11.5px;letter-spacing:.05em;color:#38312A;
+}
+.gal figcaption{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding-top:11px;border-top:1px solid var(--line);margin-top:11px;
+}
+.gal h3{margin:0;font-size:13.5px;font-weight:500}
+.gal p{margin:0;font-size:12px;color:var(--ink-3);white-space:nowrap}
+
+/* ---------- price list ---------- */
+.price{width:100%;border-collapse:collapse;margin-top:clamp(18px,2.4vw,30px);text-align:left}
+.price th,.price td{padding-block:clamp(11px,1.3vw,15px);padding-right:16px;vertical-align:baseline}
+.price thead th{
+  font-family:var(--display);font-weight:500;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);
+  border-bottom:1px solid var(--line);padding-bottom:10px;
+}
+.price tbody th{font-weight:500;font-size:14px}
+.price tbody td{font-size:13.5px;color:var(--ink-2)}
+.price tbody tr{border-bottom:1px solid var(--line)}
+.price tbody tr:hover th,.price tbody tr:hover td{color:var(--ink)}
+.price th:last-child,.price td:last-child{text-align:right;padding-right:0;white-space:nowrap}
+.price tbody td:last-child{color:var(--ink)}
+@media(max-width:640px){
+  .price thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .price tbody tr{display:grid;grid-template-columns:1fr auto;padding-block:12px}
+  .price th,.price td{padding:0}
+  .price tbody th{grid-column:1}
+  .price tbody td:last-child{grid-row:1;grid-column:2;text-align:right}
+  .price tbody td:nth-child(2),.price tbody td:nth-child(3){grid-column:1;font-size:12.5px;color:var(--ink-3)}
+}
+.price__note{margin:clamp(14px,1.8vw,20px) 0 0;font-size:13px;color:var(--ink-2);max-width:64ch}
+
+/* ---------- contact ---------- */
+.contact__grid{
+  display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);
+  gap:clamp(20px,4vw,56px);align-items:end;
+  padding-bottom:clamp(22px,3vw,38px);
+}
+@media(max-width:760px){.contact__grid{grid-template-columns:1fr;align-items:start}}
+.contact h2{
+  margin:0;font-family:var(--display);font-weight:500;
+  font-size:clamp(22px,3.7vw,46px);line-height:1.12;letter-spacing:-.02em;
+  text-wrap:balance;
+}
+.contact__lines{display:flex;flex-direction:column;gap:10px;font-size:13.5px;color:var(--ink-2)}
+.contact__lines p{margin:0}
+.contact__lines a{color:var(--ink);border-bottom:1px solid var(--line)}
+.contact__lines a:hover{border-color:var(--ink)}
+.contact__tel{font-size:clamp(17px,1.9vw,23px);border-bottom:none!important}
+.contact__shot{margin:0;overflow:hidden;border-radius:var(--r);background:var(--plate-2)}
+.contact__shot img{width:100%;aspect-ratio:2.6/1;object-fit:cover}
+@media(max-width:640px){.contact__shot img{aspect-ratio:4/3}}
+
+/* ---------- wide band + line under (KANNO) ---------- */
+.band{overflow:hidden;border-radius:var(--r);background:var(--plate-2)}
+.band img{width:100%;aspect-ratio:2.4/1;object-fit:cover;scale:1.12;will-change:transform}
+@media(max-width:640px){.band img{aspect-ratio:4/3}}
+.band__line{
+  margin:clamp(14px,1.8vw,22px) 0 0 auto;max-width:19ch;
+  font-family:var(--display);font-weight:500;
+  font-size:clamp(17px,2.6vw,32px);letter-spacing:-.015em;
+  line-height:1.15;text-align:right;text-wrap:balance;
+}
+
+/* ---------- footer ---------- */
+.ftr{background:var(--dark);color:var(--on-dark);margin-top:clamp(44px,6vw,84px);padding-block:clamp(32px,4.4vw,56px) 22px}
+.ftr__top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(22px,4vw,52px);padding-bottom:clamp(24px,3.4vw,42px);border-bottom:1px solid var(--dark-line)}
+@media(max-width:720px){.ftr__top{grid-template-columns:1fr}}
+.ftr h2{margin:0 0 14px;font-family:var(--display);font-weight:400;font-size:clamp(15px,1.7vw,19px);max-width:22ch;line-height:1.35}
+.sub{display:flex;gap:10px;border-bottom:1px solid var(--dark-line);padding-bottom:9px;max-width:340px}
+.sub input{flex:1;font-size:12.5px;padding:3px 0}
+.sub input::placeholder{color:var(--on-dark-2)}
+.sub input:focus{outline:none}
+.sub button{width:28px;height:28px;flex:0 0 28px;border-radius:999px;background:var(--on-dark);color:var(--dark);display:grid;place-items:center;transition:transform .4s var(--ease)}
+.sub button:hover{transform:rotate(45deg)}
+.sub button svg{width:11px;height:11px}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.cols h4{margin:0 0 10px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--on-dark-2);font-weight:500}
+.cols ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:12.5px}
+.cols a{opacity:.85;transition:opacity .3s}
+.cols a:hover{opacity:1}
+.ftr__mark{
+  font-family:var(--display);font-weight:700;
+  font-size:clamp(2.4rem,20vw,16.5rem);line-height:.8;letter-spacing:-.02em;
+  display:flex;justify-content:space-between;
+  padding-block:clamp(20px,3.4vw,42px) 16px;opacity:.13;user-select:none;
+}
+.ftr__base{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--on-dark-2)}
+
+/* ---------- catalogue rows ---------- */
+.lots{list-style:none;margin:clamp(4px,1vw,10px) 0 0;padding:0;border-top:1px solid var(--line)}
+.lot{
+  display:grid;align-items:center;gap:clamp(10px,1.6vw,22px);
+  grid-template-columns:80px minmax(0,1.4fr) minmax(0,1.1fr) minmax(0,.85fr) auto auto;
+  padding-block:clamp(10px,1.2vw,14px);border-bottom:1px solid var(--line);
+  transition:background .3s var(--ease);
+}
+.lot__thumb{
+  width:80px;aspect-ratio:1;border-radius:12px;background:var(--plate-2);
+  display:grid;place-items:center;padding:7px;overflow:hidden;
+}
+.lot__thumb img{
+  width:100%;height:100%;object-fit:contain;
+  transition:scale .5s var(--ease);
+}
+.lot:hover .lot__thumb img{scale:1.07}
+.lot:hover{background:color-mix(in srgb,var(--surface) 70%,transparent)}
+.lot__name{font-size:15px}
+.lot__mat,.lot__size{font-size:13.5px;color:var(--ink-2)}
+.lot__price{font-size:14.5px;white-space:nowrap;text-align:right;min-width:8ch}
+.lot__act{display:flex;align-items:center;gap:8px;justify-self:end}
+.lot__fav{
+  width:34px;height:34px;border-radius:999px;display:grid;place-items:center;
+  color:var(--ink-3);transition:color .3s var(--ease),scale .3s var(--ease);
+}
+.lot__fav svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5}
+.lot__fav:hover{color:var(--ink);scale:1.1}
+.lot__fav[aria-pressed="true"]{color:var(--accent)}
+.lot__fav[aria-pressed="true"] svg{fill:currentColor}
+.lot__add{
+  padding:9px 17px;border-radius:999px;border:1px solid var(--line);
+  font-size:12.5px;white-space:nowrap;
+  transition:background .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease);
+}
+.lot__add:hover{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+.lot__add[data-state="added"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+@media(max-width:820px){
+  .lot{grid-template-columns:64px 1fr auto;gap:2px 14px;padding-block:14px;align-items:start}
+  .lot__thumb{width:64px;grid-column:1;grid-row:1/5;align-self:start}
+  .lot__name{grid-column:2;grid-row:1;font-weight:500}
+  .lot__price{grid-column:3;grid-row:1;text-align:right;min-width:0}
+  .lot__mat{grid-column:2/-1;grid-row:2}
+  .lot__size{grid-column:2/-1;grid-row:3}
+  .lot__act{grid-column:2/-1;grid-row:4;justify-self:start;padding-top:10px}
+}
+
+/* ---------- cart & favourites drawer ---------- */
+.drawer{position:fixed;inset:0;z-index:100;visibility:hidden}
+.drawer[data-open="true"]{visibility:visible}
+.drawer__veil{
+  position:absolute;inset:0;background:rgba(22,16,10,.36);
+  opacity:0;transition:opacity .45s var(--ease);
+}
+.drawer[data-open="true"] .drawer__veil{opacity:1}
+.drawer__panel{
+  position:absolute;inset-block:0;right:0;width:min(430px,100%);
+  padding-bottom:env(safe-area-inset-bottom);
+  background:var(--surface);display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .5s var(--ease);
+  box-shadow:-24px 0 60px rgba(31,22,12,.18);
+}
+.drawer[data-open="true"] .drawer__panel{transform:none}
+.drawer__top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:18px 20px;border-bottom:1px solid var(--line);
+}
+.drawer__tabs{display:flex;gap:6px;margin:0;font-size:inherit;font-weight:400}
+.drawer__tabs button{
+  padding:7px 13px;border-radius:999px;font-size:12.5px;color:var(--ink-2);
+  transition:background .3s var(--ease),color .3s var(--ease);
+}
+.drawer__tabs button:hover{color:var(--ink)}
+.drawer__tabs button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.drawer__x{width:32px;height:32px;border-radius:999px;display:grid;place-items:center;color:var(--ink-2)}
+.drawer__x:hover{color:var(--ink)}
+.drawer__x svg{width:15px;height:15px}
+.drawer__body{flex:1;overflow-y:auto;padding:6px 20px}
+
+.lines{list-style:none;margin:0;padding:0}
+.line{display:grid;grid-template-columns:64px 1fr auto;gap:14px;padding-block:16px;border-bottom:1px solid var(--line)}
+.line__plate{border-radius:12px;background:var(--plate);display:grid;place-items:center;padding:8px;aspect-ratio:1}
+.line__plate img{width:100%;height:100%;object-fit:contain}
+.line__main{display:flex;flex-direction:column;gap:3px;min-width:0}
+.line__name{font-size:14px}
+.line__meta{font-size:12px;color:var(--ink-3)}
+.line__qty{display:flex;align-items:center;gap:2px;margin-top:6px}
+.line__qty button{
+  width:26px;height:26px;border-radius:999px;border:1px solid var(--line);
+  display:grid;place-items:center;font-size:14px;line-height:1;color:var(--ink-2);
+  transition:border-color .25s var(--ease),color .25s var(--ease);
+}
+.line__qty button:hover{border-color:var(--ink);color:var(--ink)}
+.line__qty span{min-width:26px;text-align:center;font-size:13px}
+.line__right{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:8px}
+.line__sum{font-size:13.5px;white-space:nowrap}
+.line__drop{font-size:12px;color:var(--ink-3);transition:color .25s var(--ease)}
+.line__drop:hover{color:var(--accent)}
+.line__move{
+  font-size:12px;color:var(--ink-2);border-bottom:1px solid var(--line);
+  transition:color .25s var(--ease),border-color .25s var(--ease);
+}
+.line__move:hover{color:var(--ink);border-color:var(--ink)}
+
+.empty{padding:44px 4px;text-align:center}
+.empty p{margin:0 0 4px;font-size:14px}
+.empty span{font-size:13px;color:var(--ink-3)}
+
+.drawer__foot{padding:18px 20px;border-top:1px solid var(--line)}
+.drawer__sum{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.drawer__sum span{font-size:12.5px;color:var(--ink-2)}
+.drawer__sum strong{font-family:var(--display);font-weight:400;font-size:23px}
+.drawer__fine{margin:6px 0 14px;font-size:12px;color:var(--ink-3)}
+.drawer__go{
+  width:100%;padding:14px;border-radius:999px;
+  background:var(--ink);color:var(--ground);font-size:13.5px;
+  transition:background .3s var(--ease);
+}
+.drawer__go:hover{background:var(--accent);color:var(--on-accent)}
+.drawer__go:disabled{background:var(--line);color:var(--ink-3);cursor:not-allowed}
+
+/* ---------- phone and tablet adjustments ---------- */
+@media(max-width:900px){
+  .sec__note{text-align:left;flex:1 1 100%;max-width:52ch}
+  .sec__head{align-items:flex-start;gap:10px}
+}
+@media(max-width:720px){
+  .sec{padding-block:clamp(38px,9vw,56px)}
+  .title{font-size:clamp(26px,7.6vw,34px)}
+  .band__line{max-width:none;font-size:clamp(19px,5.6vw,26px)}
+  .contact h2{font-size:clamp(24px,7vw,32px)}
+  .craft__say{max-width:none}
+  .drawer__panel{width:100%}
+  .line{grid-template-columns:56px 1fr auto;gap:12px}
+  /* touch has no hover, so the row controls are always on show */
+  .card__add{opacity:1;translate:0 0}
+}
+@media(max-width:480px){
+  .facts{grid-template-columns:1fr 1fr;gap:14px 16px}
+  .ftr__cols{grid-template-columns:1fr 1fr;gap:22px}
+}
+
+
+/* ---------- search ---------- */
+.search__x{
+  width:20px;height:20px;flex:0 0 20px;border-radius:999px;
+  display:grid;place-items:center;color:var(--ink-3);
+  transition:color .25s var(--ease);
+}
+.search__x:hover{color:var(--ink)}
+.search__x svg{width:11px;height:11px}
+
+.srch{
+  position:fixed;left:0;right:0;top:58px;z-index:68;
+  background:var(--surface);border-bottom:1px solid var(--line);
+  box-shadow:0 24px 40px rgba(31,22,12,.10);
+  max-height:calc(100dvh - 58px);overflow-y:auto;
+}
+.srch__in{max-width:var(--max);margin-inline:auto;padding:14px var(--pad) 24px}
+.srch__count{
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+  padding-bottom:8px;
+}
+.srch__group{padding-top:14px}
+.srch__group + .srch__group{margin-top:10px;border-top:1px solid var(--line)}
+.srch__kind{
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+  padding-bottom:4px;
+}
+.srch__row{
+  width:100%;text-align:left;display:grid;align-items:center;gap:14px;
+  grid-template-columns:52px 1fr auto;
+  padding-block:11px;border-bottom:1px solid var(--line);
+  transition:background .25s var(--ease);
+}
+.srch__row:last-child{border-bottom:none}
+.srch__row:hover,.srch__row:focus-visible{background:color-mix(in srgb,var(--plate-2) 45%,transparent)}
+.srch__row--plain{grid-template-columns:1fr auto}
+.srch__plate{
+  width:52px;aspect-ratio:1;border-radius:10px;background:var(--plate-2);
+  display:grid;place-items:center;padding:5px;
+}
+.srch__plate img{width:100%;height:100%;object-fit:contain}
+.srch__text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.srch__name{font-size:14px}
+.srch__meta{font-size:12px;color:var(--ink-3)}
+.srch__price{font-size:13.5px;white-space:nowrap}
+.srch__go{font-size:12px;color:var(--ink-3);white-space:nowrap}
+mark{background:color-mix(in srgb,var(--accent) 20%,transparent);color:inherit;border-radius:3px;padding:0 2px}
+
+.srch__empty{padding:18px 0 6px}
+.srch__empty p{margin:0 0 4px;font-size:15px}
+.srch__empty span{font-size:13px;color:var(--ink-2)}
+.srch__chips{display:flex;gap:8px;flex-wrap:wrap;padding-top:14px}
+.srch__chips button{
+  padding:8px 15px;border-radius:999px;border:1px solid var(--line);
+  font-size:12.5px;color:var(--ink-2);
+  transition:border-color .25s var(--ease),color .25s var(--ease);
+}
+.srch__chips button:hover{border-color:var(--ink);color:var(--ink)}
+
+/* the found row flashes once so the eye lands on it after the jump */
+@keyframes srch-land{
+  0%{background:color-mix(in srgb,var(--accent) 16%,transparent)}
+  100%{background:transparent}
+}
+.is-found{animation:srch-land 1.8s var(--ease)}
+
+/* phone: the bar turns into the search field */
+@media(max-width:640px){
+  .hdr[data-search="true"] .search{display:flex;flex:1;width:auto}
+  .hdr[data-search="true"] .hdr__logo,
+  .hdr[data-search="true"] .hdr__l,
+  .hdr[data-search="true"] #fav-btn,
+  .hdr[data-search="true"] #cart-btn{display:none}
+  .srch__row{grid-template-columns:44px 1fr;gap:12px}
+  .srch__plate{width:44px}
+  .srch__price,.srch__go{grid-column:2;font-size:12.5px;color:var(--ink-2)}
+  .srch__row--plain{grid-template-columns:1fr}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .band img,.gal__frame img{scale:1}
+}
+</style>
+
+<header class="hdr">
+  <div class="wrap hdr__in">
+    <div class="hdr__l">
+      <button class="tap burger" type="button" id="menu-btn" aria-expanded="false" aria-controls="menu" aria-label="Меню">
+        <i></i><i></i>
+      </button>
+      <a href="#collection">Коллекция</a>
+      <a href="#price">Каталог</a>
+    </div>
+
+    <div class="hdr__logo">VOLNA</div>
+
+    <div class="hdr__r">
+      <div class="search">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="8.6" cy="8.6" r="5.4"/><path d="M12.6 12.6 17 17"/>
+        </svg>
+        <label for="q" class="vh">Поиск по каталогу</label>
+        <input id="q" type="text" autocomplete="off" placeholder="Предмет, материал, комната">
+        <button class="search__x" type="button" id="q-clear" hidden aria-label="Очистить">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8"/></svg>
+        </button>
+      </div>
+
+      <div class="hdr__icons">
+      <button class="tap ico" type="button" id="search-btn" aria-label="Поиск"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.6" cy="8.6" r="5.4"/><path d="M12.6 12.6 17 17"/></svg></button>
+
+      <button class="tap ico" type="button" id="fav-btn" aria-label="Избранное">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.6S3 12.4 3 7.9A3.8 3.8 0 0 1 10 5.7a3.8 3.8 0 0 1 7 2.2c0 4.5-7 8.7-7 8.7Z"/></svg>
+        <span class="ico__n num" id="fav-count" data-empty="true">0</span>
+      </button>
+
+      <button class="tap ico" type="button" id="cart-btn" aria-label="Корзина">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.4 6.5h11.2l-.9 10a1 1 0 0 1-1 .9H6.3a1 1 0 0 1-1-.9Z"/><path d="M7.3 8.4V5.6a2.7 2.7 0 0 1 5.4 0v2.8"/></svg>
+        <span class="ico__n num" id="cart-count" data-empty="true">0</span>
+      </button>
+      </div>
+    </div>
+  </div>
+
+</header>
+
+<div class="srch" id="results" hidden>
+  <div class="srch__in"></div>
+</div>
+
+<nav class="menu" id="menu" hidden>
+    <a href="#collection">Коллекция</a>
+    <a href="#price">Каталог</a>
+    <a href="#spec">Как это сделано</a>
+    <a href="#interiors">В интерьере</a>
+    <a href="#contact">Мастерская</a>
+    <div class="menu__foot">
+      <a class="num" href="tel:+78120000000">+7 812 000-00-00</a>
+      <a href="mailto:hello@volna.ru">hello@volna.ru</a>
+    </div>
+  </nav>
+
+<main>
+  <!-- 1. HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <h1 class="mark" data-fit aria-label="VOLNA">
+        <span>V</span><span>O</span><span>L</span><span>N</span><span>A</span>
+      </h1>
+
+      <div class="rail">
+        <div class="rail__claim">
+          <span>Спокойные формы</span>
+          <span>Честные материалы</span>
+          <span>Сборка вручную</span>
+        </div>
+        <div class="rail__pieces">
+          <img class="mini mini--chair" src="images/chair-cane-cutout.png" alt="Стул Плёс">
+          <img class="mini mini--table" src="images/table-pebble-cutout.png" alt="Стол Галька">
+          <img class="hero__seat" src="images/armchair-boucle-cutout.png" alt="Кресло Мыс">
+          <img class="mini mini--sofa" src="images/sofa-modular-cutout.png" alt="Диван Волна">
+        </div>
+        <p class="rail__note">
+          Мебель из массива. Санкт-Петербург, с 2019.<br>
+          <a href="#collection">Смотреть каталог</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. NEW COLLECTION -->
+  <section class="sec" id="collection">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="title">Новая коллекция</h2>
+        <p class="sec__note">Зима 2026. Шесть предметов, четыре из них — в наличии на складе.</p>
+      </div>
+      <div class="row">
+        <article class="card" data-product="armchair">
+          <div class="card__plate">
+            <button class="card__fav" type="button" aria-pressed="false" aria-label="В избранное: Кресло «Мыс»"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.5S3.2 12.4 3.2 7.9A3.7 3.7 0 0 1 10 5.8a3.7 3.7 0 0 1 6.8 2.1c0 4.5-6.8 8.6-6.8 8.6Z"/></svg></button>
+            <img src="images/armchair-boucle-cutout.png" alt="Кресло Мыс">
+            <button class="card__add" type="button" data-price="89 400 ₽">В корзину</button>
+          </div>
+          <div class="card__foot"><span class="card__name">Кресло «Мыс»</span><span class="card__price num">89 400 ₽</span></div>
+        </article>
+        <article class="card" data-product="table">
+          <div class="card__plate">
+            <button class="card__fav" type="button" aria-pressed="false" aria-label="В избранное: Стол «Галька»"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.5S3.2 12.4 3.2 7.9A3.7 3.7 0 0 1 10 5.8a3.7 3.7 0 0 1 6.8 2.1c0 4.5-6.8 8.6-6.8 8.6Z"/></svg></button>
+            <img src="images/table-pebble-cutout.png" alt="Стол Галька">
+            <button class="card__add" type="button" data-price="142 000 ₽">В корзину</button>
+          </div>
+          <div class="card__foot"><span class="card__name">Стол «Галька»</span><span class="card__price num">142 000 ₽</span></div>
+        </article>
+        <article class="card" data-product="chair">
+          <div class="card__plate">
+            <button class="card__fav" type="button" aria-pressed="false" aria-label="В избранное: Стул «Плёс»"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.5S3.2 12.4 3.2 7.9A3.7 3.7 0 0 1 10 5.8a3.7 3.7 0 0 1 6.8 2.1c0 4.5-6.8 8.6-6.8 8.6Z"/></svg></button>
+            <img src="images/chair-cane-cutout.png" alt="Стул Плёс">
+            <button class="card__add" type="button" data-price="34 800 ₽">В корзину</button>
+          </div>
+          <div class="card__foot"><span class="card__name">Стул «Плёс»</span><span class="card__price num">34 800 ₽</span></div>
+        </article>
+        <article class="card" data-product="sofa">
+          <div class="card__plate">
+            <button class="card__fav" type="button" aria-pressed="false" aria-label="В избранное: Диван «Волна»"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.5S3.2 12.4 3.2 7.9A3.7 3.7 0 0 1 10 5.8a3.7 3.7 0 0 1 6.8 2.1c0 4.5-6.8 8.6-6.8 8.6Z"/></svg></button>
+            <img src="images/sofa-modular-cutout.png" alt="Диван Волна">
+            <button class="card__add" type="button" data-price="486 000 ₽">В корзину</button>
+          </div>
+          <div class="card__foot"><span class="card__name">Диван «Волна»</span><span class="card__price num">486 000 ₽</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. SPEC -->
+  <section class="sec" id="spec">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="title">Как это сделано</h2>
+      </div>
+
+      <div class="craft">
+        <p class="craft__say">
+          Доску сушим сами. Четырнадцать месяцев — дольше и дороже покупной
+          сушки, зато столешница не ведёт зимой в сухой квартире.
+        </p>
+        <figure class="craft__shot">
+          <img src="images/interior-workshop.webp" alt="Дубовый стол и стул с ротангом у окна">
+        </figure>
+      </div>
+
+      <dl class="facts">
+          <div>
+            <dt>Порода</dt>
+            <dd class="num">Орех и дуб</dd>
+            <p>Доска своей сушки</p>
+          </div>
+          <div>
+            <dt>Влажность</dt>
+            <dd class="num">8 %</dd>
+            <p>Досушиваем 14 месяцев</p>
+          </div>
+          <div>
+            <dt>Покрытие</dt>
+            <dd class="num">Масло с воском</dd>
+            <p>Без плёнки и запаха</p>
+          </div>
+          <div>
+            <dt>Каркас</dt>
+            <dd class="num">Шканты и клинья</dd>
+            <p>Мебельных стяжек нет</p>
+          </div>
+          <div>
+            <dt>Букле</dt>
+            <dd class="num">78 % шерсть</dd>
+            <p>45 000 циклов на истирание</p>
+          </div>
+          <div>
+            <dt>Ротанг</dt>
+            <dd class="num">Вручную</dd>
+            <p>6 часов на сиденье</p>
+          </div>
+          <div>
+            <dt>Срок</dt>
+            <dd class="num">4–6 недель</dd>
+            <p>От предоплаты</p>
+          </div>
+          <div>
+            <dt>Гарантия</dt>
+            <dd class="num">10 лет</dd>
+            <p>На каркас</p>
+          </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- 4. INTERIORS -->
+  <section class="sec" id="interiors">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="title">В интерьере</h2>
+        <p class="sec__note">Снято у заказчиков — без стилиста и реквизита, мебель стоит так, как ею пользуются.</p>
+      </div>
+      <div class="gal">
+        <figure class="gal--a">
+          <div class="gal__frame">
+            <span class="gal__tag">Гостиная</span>
+            <img src="images/interior-living.webp" alt="Модульный диван Волна и стол Галька у оштукатуренной стены">
+          </div>
+          <figcaption>
+            <h3>Диван «Волна», стол «Галька»</h3>
+            <p class="num">Петербург, 86 м²</p>
+          </figcaption>
+        </figure>
+        <figure class="gal--b">
+          <div class="gal__frame">
+            <span class="gal__tag">Угол для чтения</span>
+            <img src="images/interior-reading.webp" alt="Кресло Мыс у окна со столиком и книгами">
+          </div>
+          <figcaption>
+            <h3>Кресло «Мыс»</h3>
+            <p class="num">Москва, 54 м²</p>
+          </figcaption>
+        </figure>
+        <figure class="gal--c">
+          <div class="gal__frame">
+            <span class="gal__tag">Спальня</span>
+            <img src="images/interior-bedroom.webp" alt="Дубовая кровать с льняным бельём">
+          </div>
+          <figcaption>
+            <h3>Кровать «Тишь»</h3>
+            <p class="num">Петербург, 71 м²</p>
+          </figcaption>
+        </figure>
+        <figure class="gal--d">
+          <div class="gal__frame">
+            <span class="gal__tag">Кабинет</span>
+            <img src="images/interior-workshop.webp" alt="Дубовый стол со стулом и полками">
+          </div>
+          <figcaption>
+            <h3>Стол «Круг», стул «Плёс»</h3>
+            <p class="num">Казань, 43 м²</p>
+          </figcaption>
+        </figure>
+        <figure class="gal--e">
+          <div class="gal__frame">
+            <span class="gal__tag">Обеденная</span>
+            <img src="images/interior-dining.webp" alt="Круглый дубовый стол и два стула у окна">
+          </div>
+          <figcaption>
+            <h3>Стол «Круг», стулья «Плёс»</h3>
+            <p class="num">Петербург, 92 м²</p>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. BAND -->
+  <section class="sec" style="padding-block:0">
+    <div class="wrap">
+      <div class="band"><img src="images/interior-dining.webp" alt="Интерьер с мебелью VOLNA"></div>
+      <p class="band__line">Мы делаем мебель, которая не спорит с комнатой</p>
+    </div>
+  </section>
+
+  <!-- 6. PRICE LIST -->
+  <section class="sec" id="price">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="title">Каталог</h2>
+        <p class="sec__note">Цены за изделие в базовой отделке. Другая порода или ткань — пересчитаем.</p>
+      </div>
+
+      <ul class="lots">
+        <li class="lot" data-product="chair">
+          <span class="lot__thumb"><img src="images/chair-cane-cutout.png" alt="Стул Плёс"></span>
+          <span class="lot__name">Стул «Плёс»</span>
+          <span class="lot__mat">Гнутый дуб, ротанг</span>
+          <span class="lot__size num">46 × 52 × 86</span>
+          <span class="lot__price num">34 800 ₽</span>
+          <span class="lot__act">
+            <button class="lot__fav" type="button" aria-pressed="false" aria-label="В избранное: Стул «Плёс»"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.5S3.2 12.4 3.2 7.9A3.7 3.7 0 0 1 10 5.8a3.7 3.7 0 0 1 6.8 2.1c0 4.5-6.8 8.6-6.8 8.6Z"/></svg></button>
+            <button class="lot__add" type="button">В корзину</button>
+          </span>
+        </li>
+        <li class="lot" data-product="armchair">
+          <span class="lot__thumb"><img src="images/armchair-boucle-cutout.png" alt="Кресло Мыс"></span>
+          <span class="lot__name">Кресло «Мыс»</span>
+          <span class="lot__mat">Букле, ножки орех</span>
+          <span class="lot__size num">84 × 78 × 72</span>
+          <span class="lot__price num">89 400 ₽</span>
+          <span class="lot__act">
+            <button class="lot__fav" type="button" aria-pressed="false" aria-label="В избранное: Кресло «Мыс»"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.5S3.2 12.4 3.2 7.9A3.7 3.7 0 0 1 10 5.8a3.7 3.7 0 0 1 6.8 2.1c0 4.5-6.8 8.6-6.8 8.6Z"/></svg></button>
+            <button class="lot__add" type="button">В корзину</button>
+          </span>
+        </li>
+        <li class="lot" data-product="table">
+          <span class="lot__thumb"><img src="images/table-pebble-cutout.png" alt="Стол Галька"></span>
+          <span class="lot__name">Стол «Галька»</span>
+          <span class="lot__mat">Массив ореха</span>
+          <span class="lot__size num">96 × 82 × 34</span>
+          <span class="lot__price num">142 000 ₽</span>
+          <span class="lot__act">
+            <button class="lot__fav" type="button" aria-pressed="false" aria-label="В избранное: Стол «Галька»"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.5S3.2 12.4 3.2 7.9A3.7 3.7 0 0 1 10 5.8a3.7 3.7 0 0 1 6.8 2.1c0 4.5-6.8 8.6-6.8 8.6Z"/></svg></button>
+            <button class="lot__add" type="button">В корзину</button>
+          </span>
+        </li>
+        <li class="lot" data-product="sofa">
+          <span class="lot__thumb"><img src="images/sofa-modular-cutout.png" alt="Диван Волна"></span>
+          <span class="lot__name">Диван «Волна», 4 модуля</span>
+          <span class="lot__mat">Букле</span>
+          <span class="lot__size num">312 × 168 × 74</span>
+          <span class="lot__price num">486 000 ₽</span>
+          <span class="lot__act">
+            <button class="lot__fav" type="button" aria-pressed="false" aria-label="В избранное: Диван «Волна», 4 модуля"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.5S3.2 12.4 3.2 7.9A3.7 3.7 0 0 1 10 5.8a3.7 3.7 0 0 1 6.8 2.1c0 4.5-6.8 8.6-6.8 8.6Z"/></svg></button>
+            <button class="lot__add" type="button">В корзину</button>
+          </span>
+        </li>
+      </ul>
+
+      <p class="price__note">
+        Предоплата <span class="num">50 %</span>. Доставка, подъём и сборка входят в цену.
+        Дизайнерам — <span class="num">15 %</span> агентских и 3D-модели коллекции.
+      </p>
+    </div>
+  </section>
+
+  <!-- 7. CONTACT -->
+  <section class="sec contact" id="contact">
+    <div class="wrap">
+      <div class="contact__grid">
+        <h2>Приезжайте в мастерскую — посмотреть, потрогать, сесть</h2>
+        <div class="contact__lines">
+          <p>наб. Обводного канала 74, корпус 3<br>Ежедневно с 11:00 до 20:00</p>
+          <a href="tel:+78120000000" class="num contact__tel">+7 812 000-00-00</a>
+          <p><a href="mailto:hello@volna.ru">hello@volna.ru</a> · <a href="#contact">@volna_mebel</a></p>
+        </div>
+      </div>
+      <figure class="contact__shot">
+        <img src="images/interior-living.webp" alt="Гостиная с диваном Волна">
+      </figure>
+    </div>
+  </section>
+</main>
+
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr__top">
+      <div>
+        <h2>Расскажем, когда выйдет следующая коллекция</h2>
+        <form class="sub" onsubmit="return false">
+          <label for="mail" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Почта</label>
+          <input id="mail" type="email" placeholder="Ваша почта" autocomplete="email">
+          <button type="submit" aria-label="Подписаться">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 9.5 9.5 2.5M4 2.5h5.5V8"/></svg>
+          </button>
+        </form>
+      </div>
+      <div class="cols">
+        <div>
+          <h4>Каталог</h4>
+          <ul><li><a href="#collection">Диваны</a></li><li><a href="#collection">Кресла</a></li><li><a href="#collection">Столы</a></li><li><a href="#collection">Стулья</a></li></ul>
+        </div>
+        <div>
+          <h4>Бренд</h4>
+          <ul><li><a href="#spec">Мастерская</a></li><li><a href="#interiors">В интерьере</a></li><li><a href="#price">Дизайнерам</a></li></ul>
+        </div>
+        <div>
+          <h4>Контакты</h4>
+          <ul><li><a class="num" href="tel:+78120000000">+7 812 000-00-00</a></li><li><a href="mailto:hello@volna.ru">hello@volna.ru</a></li><li><a href="#contact">Telegram</a></li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="ftr__mark" data-fit aria-hidden="true">
+      <span>V</span><span>O</span><span>L</span><span>N</span><span>A</span>
+    </div>
+
+    <div class="ftr__base">
+      <span>©&nbsp;2026 VOLNA</span>
+      <span>Санкт-Петербург, наб. Обводного канала 74</span>
+    </div>
+  </div>
+</footer>
+
+<div class="drawer" id="drawer" data-open="false" aria-hidden="true">
+  <div class="drawer__veil" data-close></div>
+  <aside class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+    <header class="drawer__top">
+      <h2 id="drawer-title" class="drawer__tabs">
+        <button type="button" data-tab="cart" aria-pressed="true">Корзина <span class="num" id="tab-cart-n">0</span></button>
+        <button type="button" data-tab="fav" aria-pressed="false">Избранное <span class="num" id="tab-fav-n">0</span></button>
+      </h2>
+      <button class="drawer__x" type="button" data-close aria-label="Закрыть">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>
+      </button>
+    </header>
+
+    <div class="drawer__body">
+      <ul class="lines" id="cart-lines"></ul>
+      <ul class="lines" id="fav-lines" hidden></ul>
+    </div>
+
+    <footer class="drawer__foot" id="cart-foot">
+      <div class="drawer__sum">
+        <span>Итого</span>
+        <strong class="num" id="cart-total">0 ₽</strong>
+      </div>
+      <p class="drawer__fine">Доставка, подъём и сборка входят в цену. Предоплата 50 %.</p>
+      <button class="drawer__go" type="button" id="checkout">Оформить заказ</button>
+    </footer>
+  </aside>
+</div>
+
+
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script src="vendor/lenis.min.js"></script>
+<script>
+(function () {
+  /* ---- wordmark fitting --------------------------------------------------
+     Size each wordmark so its letters span the container edge to edge at their
+     natural tracking. The CSS clamp covers the no-JS case; without this the
+     letters sit apart by whatever width the loaded face happens to be. */
+  function fitMarks() {
+    document.querySelectorAll('[data-fit]').forEach(function (el) {
+      var box = el.clientWidth;
+      if (!box) return;
+      el.style.fontSize = '200px';
+      var natural = 0;
+      Array.prototype.forEach.call(el.children, function (c) {
+        natural += c.getBoundingClientRect().width;
+      });
+      el.style.fontSize = natural ? (200 * (box / natural) * 0.998) + 'px' : '';
+    });
+  }
+  fitMarks();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitMarks);
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitMarks, 120);
+  });
+
+  /* ---- catalogue, cart and favourites ----------------------------------- */
+  var CATALOG = {
+    chair:    { name: 'Стул «Плёс»',            meta: 'Гнутый дуб, ротанг · 46 × 52 × 86', price: 34800,  img: 'images/chair-cane-cutout.png' },
+    armchair: { name: 'Кресло «Мыс»',           meta: 'Букле, ножки орех · 84 × 78 × 72',  price: 89400,  img: 'images/armchair-boucle-cutout.png' },
+    table:    { name: 'Стол «Галька»',          meta: 'Массив ореха · 96 × 82 × 34',       price: 142000, img: 'images/table-pebble-cutout.png' },
+    sofa:     { name: 'Диван «Волна», 4 модуля', meta: 'Букле · 312 × 168 × 74',           price: 486000, img: 'images/sofa-modular-cutout.png' }
+  };
+
+  var STORE = 'volna.basket';
+  var state = { cart: {}, fav: {} };
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORE) || '{}');
+    state.cart = saved.cart || {};
+    state.fav = saved.fav || {};
+  } catch (e) { /* private mode or blocked storage — stay in memory */ }
+
+  function persist() {
+    try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {}
+  }
+  function money(n) { return n.toLocaleString('ru-RU') + ' ₽'; }
+  function cartCount() {
+    return Object.keys(state.cart).reduce(function (n, k) { return n + state.cart[k]; }, 0);
+  }
+  function cartTotal() {
+    return Object.keys(state.cart).reduce(function (n, k) {
+      return n + state.cart[k] * CATALOG[k].price;
+    }, 0);
+  }
+
+  var el = {
+    drawer:   document.getElementById('drawer'),
+    cartLines: document.getElementById('cart-lines'),
+    favLines:  document.getElementById('fav-lines'),
+    cartFoot:  document.getElementById('cart-foot'),
+    total:     document.getElementById('cart-total'),
+    checkout:  document.getElementById('checkout')
+  };
+
+  function lineNode(id, mode) {
+    var p = CATALOG[id];
+    var li = document.createElement('li');
+    li.className = 'line';
+    li.innerHTML =
+      '<span class="line__plate"><img src="' + p.img + '" alt=""></span>' +
+      '<span class="line__main">' +
+        '<span class="line__name">' + p.name + '</span>' +
+        '<span class="line__meta">' + p.meta + '</span>' +
+        (mode === 'cart'
+          ? '<span class="line__qty">' +
+              '<button type="button" data-step="-1" aria-label="Убрать одну">−</button>' +
+              '<span class="num">' + state.cart[id] + '</span>' +
+              '<button type="button" data-step="1" aria-label="Добавить одну">+</button>' +
+            '</span>'
+          : '<button class="line__move" type="button" data-move>В корзину</button>') +
+      '</span>' +
+      '<span class="line__right">' +
+        '<span class="line__sum num">' + money(mode === 'cart' ? p.price * state.cart[id] : p.price) + '</span>' +
+        '<button class="line__drop" type="button" data-drop>Убрать</button>' +
+      '</span>';
+
+    li.addEventListener('click', function (ev) {
+      var b = ev.target.closest('button');
+      if (!b) return;
+      if (b.dataset.step) {
+        state.cart[id] += Number(b.dataset.step);
+        if (state.cart[id] < 1) delete state.cart[id];
+      } else if (b.hasAttribute('data-move')) {
+        state.cart[id] = (state.cart[id] || 0) + 1;
+        delete state.fav[id];
+      } else if (b.hasAttribute('data-drop')) {
+        if (mode === 'cart') delete state.cart[id]; else delete state.fav[id];
+      }
+      persist();
+      render();
+    });
+    return li;
+  }
+
+  function emptyNode(title, hint) {
+    var li = document.createElement('li');
+    li.className = 'empty';
+    li.innerHTML = '<p>' + title + '</p><span>' + hint + '</span>';
+    return li;
+  }
+
+  function render() {
+    var cartIds = Object.keys(state.cart);
+    var favIds = Object.keys(state.fav);
+
+    el.cartLines.replaceChildren.apply(el.cartLines, cartIds.length
+      ? cartIds.map(function (id) { return lineNode(id, 'cart'); })
+      : [emptyNode('В корзине пусто', 'Добавьте предмет из каталога — он появится здесь.')]);
+
+    el.favLines.replaceChildren.apply(el.favLines, favIds.length
+      ? favIds.map(function (id) { return lineNode(id, 'fav'); })
+      : [emptyNode('Избранное пусто', 'Нажмите сердце на карточке, чтобы отложить предмет.')]);
+
+    el.total.textContent = money(cartTotal());
+    el.checkout.disabled = cartIds.length === 0;
+
+    [['cart-count', cartCount()], ['tab-cart-n', cartCount()],
+     ['fav-count', favIds.length], ['tab-fav-n', favIds.length]].forEach(function (pair) {
+      var node = document.getElementById(pair[0]);
+      if (!node) return;
+      node.textContent = pair[1];
+      if (node.dataset.empty !== undefined) node.dataset.empty = pair[1] === 0 ? 'true' : 'false';
+    });
+
+    document.querySelectorAll('[data-product]').forEach(function (host) {
+      var id = host.dataset.product;
+      var fav = host.querySelector('.card__fav, .lot__fav');
+      var add = host.querySelector('.card__add, .lot__add');
+      if (fav) fav.setAttribute('aria-pressed', state.fav[id] ? 'true' : 'false');
+      if (add) {
+        add.textContent = state.cart[id] ? 'В корзине · ' + state.cart[id] : 'В корзину';
+        if (state.cart[id]) add.dataset.state = 'added'; else delete add.dataset.state;
+      }
+    });
+  }
+
+  document.querySelectorAll('[data-product]').forEach(function (host) {
+    var id = host.dataset.product;
+    var add = host.querySelector('.card__add, .lot__add');
+    var fav = host.querySelector('.card__fav, .lot__fav');
+    if (add) add.addEventListener('click', function () {
+      state.cart[id] = (state.cart[id] || 0) + 1;
+      persist(); render();
+    });
+    if (fav) fav.addEventListener('click', function () {
+      if (state.fav[id]) delete state.fav[id]; else state.fav[id] = 1;
+      persist(); render();
+    });
+  });
+
+  /* ---- drawer ------------------------------------------------------------ */
+  var lastTrigger = null;
+
+  function showTab(tab) {
+    el.cartLines.hidden = tab !== 'cart';
+    el.favLines.hidden = tab !== 'fav';
+    el.cartFoot.hidden = tab !== 'cart';
+    el.drawer.querySelectorAll('[data-tab]').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.tab === tab));
+    });
+  }
+  function openDrawer(tab, trigger) {
+    lastTrigger = trigger || null;
+    showTab(tab);
+    el.drawer.dataset.open = 'true';
+    el.drawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    var first = el.drawer.querySelector('[data-tab]');
+    if (first) first.focus();
+  }
+  function closeDrawer() {
+    el.drawer.dataset.open = 'false';
+    el.drawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lastTrigger) lastTrigger.focus();
+  }
+
+  /* off-canvas menu */
+  var hdr = document.querySelector('.hdr');
+  var menuBtn = document.getElementById('menu-btn');
+  var menu = document.getElementById('menu');
+  function setMenu(open) {
+    menu.hidden = !open;
+    hdr.dataset.menu = String(open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+  }
+  menuBtn.addEventListener('click', function () { setMenu(menu.hidden); });
+  menu.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () { setMenu(false); });
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && !menu.hidden) { setMenu(false); menuBtn.focus(); }
+  });
+  /* the menu is desktop-irrelevant: close it if the viewport grows past it */
+  var wide = window.matchMedia('(min-width: 861px)');
+  wide.addEventListener('change', function (e) { if (e.matches) setMenu(false); });
+
+  /* ---- search ------------------------------------------------------------
+     One index over the things the page actually holds: the products, the
+     rooms in the interiors gallery, and the sections themselves, because
+     people search to navigate as often as to find. */
+  var INDEX = [];
+  Object.keys(CATALOG).forEach(function (id) {
+    var p = CATALOG[id];
+    INDEX.push({ kind: 'Каталог', id: id, title: p.name, meta: p.meta, price: p.price, img: p.img, target: '#price' });
+  });
+  document.querySelectorAll('.gal figure').forEach(function (fig) {
+    INDEX.push({
+      kind: 'В интерьере',
+      title: fig.querySelector('.gal__tag').textContent,
+      meta: fig.querySelector('h3').textContent + ' · ' + fig.querySelector('p').textContent,
+      target: '#interiors'
+    });
+  });
+  [['Как это сделано', 'Порода, влажность, покрытие, крепёж, каркас, букле, ротанг, срок, гарантия', '#spec'],
+   ['Новая коллекция', 'Зима 2026, диваны, кресла, столы, стулья', '#collection'],
+   ['Мастерская', 'Адрес, часы работы, телефон, доставка, сборка, предоплата', '#contact']
+  ].forEach(function (r) {
+    INDEX.push({ kind: 'Раздел', title: r[0], meta: r[1], target: r[2] });
+  });
+
+  function norm(t) { return t.toLowerCase().replace(/ё/g, 'е').replace(/[«»"',.]/g, ' '); }
+
+  function search(raw) {
+    var words = norm(raw).split(/\s+/).filter(Boolean);
+    if (!words.length) return [];
+    return INDEX.map(function (item) {
+        var title = norm(item.title), meta = norm(item.meta || '');
+        var score = 0;
+        for (var i = 0; i < words.length; i++) {
+          var w = words[i];
+          if (title.indexOf(w) === 0) score += 6;
+          else if (title.indexOf(w) > -1) score += 4;
+          else if (meta.indexOf(w) > -1) score += 2;
+          else return null;              /* every word must land somewhere */
+        }
+        return { item: item, score: score };
+      })
+      .filter(Boolean)
+      .sort(function (a, b) { return b.score - a.score; })
+      .map(function (r) { return r.item; });
+  }
+
+  /* wrap the typed part where it appears, without trusting it as markup */
+  function mark(text, raw) {
+    var words = norm(raw).split(/\s+/).filter(Boolean);
+    var hay = norm(text), hits = [];
+    words.forEach(function (w) {
+      var from = 0, at;
+      while ((at = hay.indexOf(w, from)) > -1) { hits.push([at, at + w.length]); from = at + w.length; }
+    });
+    if (!hits.length) return document.createTextNode(text);
+    hits.sort(function (a, b) { return a[0] - b[0]; });
+    var frag = document.createDocumentFragment(), cursor = 0;
+    hits.forEach(function (h) {
+      if (h[0] < cursor) return;
+      frag.appendChild(document.createTextNode(text.slice(cursor, h[0])));
+      var m = document.createElement('mark');
+      m.textContent = text.slice(h[0], h[1]);
+      frag.appendChild(m);
+      cursor = h[1];
+    });
+    frag.appendChild(document.createTextNode(text.slice(cursor)));
+    return frag;
+  }
+
+  var field = document.getElementById('q');
+  var clearBtn = document.getElementById('q-clear');
+  var panel = document.getElementById('results');
+  var panelIn = panel.querySelector('.srch__in');
+  var searchBtn = document.getElementById('search-btn');
+
+  function land(target, productId) {
+    var node = document.querySelector(target);
+    if (node) node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (productId) {
+      var row = document.querySelector('.lot[data-product="' + productId + '"]');
+      if (row) {
+        row.classList.remove('is-found');
+        void row.offsetWidth;
+        row.classList.add('is-found');
+      }
+    }
+    /* the query has been answered, so the field starts clean for the next one */
+    field.value = '';
+    clearBtn.hidden = true;
+    panelIn.replaceChildren();
+    closeSearch();
+  }
+
+  function row(item, raw) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'srch__row' + (item.img ? '' : ' srch__row--plain');
+    if (item.img) {
+      var plate = document.createElement('span');
+      plate.className = 'srch__plate';
+      var img = document.createElement('img');
+      img.src = item.img; img.alt = '';
+      plate.appendChild(img);
+      b.appendChild(plate);
+    }
+    var text = document.createElement('span');
+    text.className = 'srch__text';
+    var name = document.createElement('span');
+    name.className = 'srch__name';
+    name.appendChild(mark(item.title, raw));
+    var meta = document.createElement('span');
+    meta.className = 'srch__meta';
+    meta.appendChild(mark(item.meta || '', raw));
+    text.appendChild(name); text.appendChild(meta);
+    b.appendChild(text);
+
+    var right = document.createElement('span');
+    if (item.price) { right.className = 'srch__price num'; right.textContent = money(item.price); }
+    else { right.className = 'srch__go'; right.textContent = 'Перейти'; }
+    b.appendChild(right);
+
+    b.addEventListener('click', function () { land(item.target, item.id); });
+    return b;
+  }
+
+  var POPULAR = ['Кресло', 'Ротанг', 'Букле', 'Спальня', 'Гарантия'];
+
+  function renderResults(raw) {
+    panelIn.replaceChildren();
+    var q = raw.trim();
+    if (!q) { panel.hidden = true; return; }
+
+    var hits = search(q);
+    panel.hidden = false;
+
+    if (!hits.length) {
+      var empty = document.createElement('div');
+      empty.className = 'srch__empty';
+      var p1 = document.createElement('p');
+      p1.textContent = 'Ничего не нашлось по запросу «' + q + '»';
+      var p2 = document.createElement('span');
+      p2.textContent = 'Поищите по названию предмета, материалу или комнате.';
+      empty.appendChild(p1); empty.appendChild(p2);
+      var chips = document.createElement('div');
+      chips.className = 'srch__chips';
+      POPULAR.forEach(function (w) {
+        var c = document.createElement('button');
+        c.type = 'button'; c.textContent = w;
+        c.addEventListener('click', function () { field.value = w; onType(); field.focus(); });
+        chips.appendChild(c);
+      });
+      empty.appendChild(chips);
+      panelIn.appendChild(empty);
+      return;
+    }
+
+    var count = document.createElement('p');
+    count.className = 'srch__count';
+    var n = hits.length;
+    var word = n % 10 === 1 && n % 100 !== 11 ? 'результат'
+      : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'результата' : 'результатов');
+    count.textContent = n + ' ' + word;
+    panelIn.appendChild(count);
+
+    var groups = {};
+    hits.forEach(function (h) { (groups[h.kind] = groups[h.kind] || []).push(h); });
+    Object.keys(groups).forEach(function (kind) {
+      var g = document.createElement('div');
+      g.className = 'srch__group';
+      var k = document.createElement('p');
+      k.className = 'srch__kind';
+      k.textContent = kind;
+      g.appendChild(k);
+      groups[kind].slice(0, 6).forEach(function (item) { g.appendChild(row(item, q)); });
+      panelIn.appendChild(g);
+    });
+  }
+
+  function onType() {
+    clearBtn.hidden = !field.value;
+    renderResults(field.value);
+  }
+
+  function openSearch() {
+    setMenu(false);
+    hdr.dataset.search = 'true';
+    field.focus();
+    if (field.value) renderResults(field.value);
+  }
+  function closeSearch() {
+    panel.hidden = true;
+    hdr.dataset.search = 'false';
+  }
+
+  field.addEventListener('input', onType);
+  field.addEventListener('focus', function () { if (field.value) renderResults(field.value); });
+  field.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') { closeSearch(); field.blur(); }
+    if (ev.key === 'Enter') {
+      ev.preventDefault();
+      var first = panelIn.querySelector('.srch__row');
+      if (first) first.click();
+    }
+    if (ev.key === 'ArrowDown') {
+      var r = panelIn.querySelector('.srch__row');
+      if (r) { ev.preventDefault(); r.focus(); }
+    }
+  });
+  clearBtn.addEventListener('click', function () {
+    field.value = '';
+    onType();
+    field.focus();
+  });
+  searchBtn.addEventListener('click', function () {
+    if (hdr.dataset.search === 'true') { closeSearch(); } else { openSearch(); }
+  });
+  document.addEventListener('click', function (ev) {
+    if (panel.hidden) return;
+    if (!panel.contains(ev.target) && !ev.target.closest('.search') && ev.target !== searchBtn) closeSearch();
+  });
+
+  document.getElementById('cart-btn').addEventListener('click', function () { setMenu(false); openDrawer('cart', this); });
+  document.getElementById('fav-btn').addEventListener('click', function () { setMenu(false); openDrawer('fav', this); });
+  el.drawer.querySelectorAll('[data-tab]').forEach(function (b) {
+    b.addEventListener('click', function () { showTab(b.dataset.tab); });
+  });
+  el.drawer.querySelectorAll('[data-close]').forEach(function (b) {
+    b.addEventListener('click', closeDrawer);
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && el.drawer.dataset.open === 'true') closeDrawer();
+  });
+  el.checkout.addEventListener('click', function () {
+    el.checkout.textContent = 'Заявка принята — перезвоним';
+    el.checkout.disabled = true;
+  });
+
+  render();
+
+  /* ---- motion ------------------------------------------------------------
+     One authored moment: the hero. Everything further down answers a pointer,
+     so the page never plays the same entrance at every section. */
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (typeof window.gsap === 'undefined' || typeof window.ScrollTrigger === 'undefined') return;
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  if (typeof window.Lenis !== 'undefined') {
+    var lenis = new Lenis({ duration: 1.05, smoothWheel: true });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+    gsap.ticker.lagSmoothing(0);
+  }
+
+  gsap.timeline({ defaults: { ease: 'expo.out' } })
+    .from('.mark span', { yPercent: 24, duration: 1.15, stagger: 0.055 })
+    .from('.hero__seat', { yPercent: 14, duration: 1.2 }, '-=0.7')
+    .from('.mini', { yPercent: 20, duration: 1, stagger: 0.07 }, '<')
+    .from('.rail__claim, .rail__note', { y: 12, duration: .8, stagger: .06 }, '-=0.9');
+
+  /* the seat keeps rising through the letters as the hero scrolls away */
+  gsap.to('.hero__seat', {
+    yPercent: -16, ease: 'none',
+    scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
+  });
+
+  /* the one wide photo drifts against its frame */
+  gsap.fromTo('.band img', { yPercent: -4 }, {
+    yPercent: 4, ease: 'none',
+    scrollTrigger: { trigger: '.band', start: 'top bottom', end: 'bottom top', scrub: true }
+  });
+})();
+</script>
