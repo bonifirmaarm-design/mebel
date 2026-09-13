@@ -1,6 +1,7 @@
 # VOLNA
 
-Магазин мебели. Портфолио-проект. Прототип: `prototype/index.html`.
+Магазин мебели. Портфолио-проект. Сайт целиком — `docs/index.html`
+(эта же папка публикуется через GitHub Pages, см. README).
 
 ## Правило: дизайн-скиллы обязательны
 
@@ -24,7 +25,7 @@
 После правки UI прогонять механический детектор:
 
 ```
-.claude/skills/impeccable/scripts/impeccable detect --json prototype/index.html
+.claude/skills/impeccable/scripts/impeccable detect --json docs/index.html
 ```
 
 ## Что запрещено в этом проекте
@@ -48,7 +49,7 @@
 ## Контент
 
 - Генерация картинок в Krea — **только по явной просьбе**. Токены платные.
-- Исходники референсов лежат в `references/`, ассеты — в `public/images/`.
+- Исходники референсов лежат в `references/`, ассеты — в `docs/images/`.
 
 ## Типографика
 
@@ -59,5 +60,6 @@
 
 ## Стек
 
-Прототип — один HTML-файл: GSAP + ScrollTrigger с cdnjs, Lenis с jsdelivr,
-шрифты с Google Fonts. Дальше разворачивается в Next.js.
+Один HTML-файл без сборки: GSAP + ScrollTrigger с cdnjs, Lenis с jsdelivr,
+шрифты с Google Fonts. Папка `docs/` самодостаточна и открывается как есть.
+Дальше разворачивается в Next.js.
