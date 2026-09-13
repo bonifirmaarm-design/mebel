@@ -47,7 +47,7 @@
 body{
   margin:0;background:var(--ground);color:var(--ink);
   font-family:"Onest",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
@@ -66,14 +66,15 @@ input{caret-color:var(--accent)}
 ::-webkit-scrollbar-thumb{background:var(--line);border-radius:999px;border:3px solid var(--ground)}
 ::-webkit-scrollbar-thumb:hover{background:var(--ink-3)}
 
-/* section title — light, centred, wide tracking (KANNO) */
+/* Section titles carry the block, so they are set at display size and left
+   aligned (ADAMAS). Caps stay inside the 5–12% letterspacing band; the 26%
+   tracking they had before is what made them read as weak labels. */
 .title{
   font-family:"Golos Text",sans-serif;font-weight:500;
-  font-size:clamp(13px,1.4vw,16px);letter-spacing:.26em;text-transform:uppercase;
-  margin:0;text-align:center;
+  font-size:clamp(23px,3.5vw,44px);letter-spacing:.045em;text-transform:uppercase;
+  line-height:1.08;margin:0;text-wrap:balance;
 }
-.title--left{text-align:left;letter-spacing:.2em;font-size:clamp(14px,1.9vw,22px)}
-.label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
+.label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 
 /* ---------- pill ---------- */
 .pill{
@@ -167,8 +168,14 @@ input{caret-color:var(--accent)}
 @media(max-width:520px){.mini:nth-of-type(2){display:none}}
 
 /* ---------- collection ---------- */
-.sec{padding-block:clamp(46px,6.5vw,96px)}
-.sec__head{margin-bottom:clamp(22px,3vw,40px)}
+.sec{padding-block:clamp(44px,5.6vw,80px)}
+.sec__head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  gap:clamp(16px,3vw,48px);flex-wrap:wrap;
+  margin-bottom:clamp(20px,2.6vw,34px);
+}
+.sec__note{margin:0;font-size:13.5px;color:var(--ink-2);max-width:38ch;text-align:right}
+@media(max-width:700px){.sec__note{text-align:left}}
 .row{display:grid;gap:var(--gap);grid-template-columns:repeat(4,1fr)}
 @media(max-width:860px){.row{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:420px){.row{grid-template-columns:1fr}}
@@ -249,15 +256,26 @@ input{caret-color:var(--accent)}
   .gal{grid-template-columns:1fr}
   .gal--a,.gal--b,.gal--c,.gal--d,.gal--e{grid-column:span 1}
 }
-.gal__frame{overflow:hidden;border-radius:var(--r);background:var(--plate-2)}
+.gal__frame{position:relative;overflow:hidden;border-radius:var(--r);background:var(--plate-2)}
 .gal__frame img{width:100%;object-fit:cover;transition:scale .9s var(--ease)}
 .gal figure:hover .gal__frame img{scale:1.035}
 .gal--a img{aspect-ratio:16/10}
 .gal--b img{aspect-ratio:3/4}
 .gal--c img,.gal--d img,.gal--e img{aspect-ratio:4/3}
-.gal figcaption{padding-top:10px}
-.gal h3{margin:0 0 2px;font-size:13px;font-weight:500}
-.gal p{margin:0;font-size:12px;color:var(--ink-3)}
+/* the room name rides on the photograph (ADAMAS), the products sit below it */
+.gal__tag{
+  position:absolute;top:12px;left:12px;z-index:2;
+  padding:7px 14px;border-radius:999px;
+  background:color-mix(in srgb,#FBF9F5 84%,transparent);
+  backdrop-filter:blur(8px);
+  font-size:11.5px;letter-spacing:.05em;color:#38312A;
+}
+.gal figcaption{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding-top:11px;border-top:1px solid var(--line);margin-top:11px;
+}
+.gal h3{margin:0;font-size:13.5px;font-weight:500}
+.gal p{margin:0;font-size:12px;color:var(--ink-3);white-space:nowrap}
 
 /* ---------- price list ---------- */
 .price{width:100%;border-collapse:collapse;margin-top:clamp(18px,2.4vw,30px);text-align:left}
@@ -397,7 +415,10 @@ input{caret-color:var(--accent)}
   <!-- 2. NEW COLLECTION -->
   <section class="sec" id="collection">
     <div class="wrap">
-      <div class="sec__head"><h2 class="title">Новая коллекция</h2></div>
+      <div class="sec__head">
+        <h2 class="title">Новая коллекция</h2>
+        <p class="sec__note">Зима 2026. Шесть предметов, четыре из них — в наличии на складе.</p>
+      </div>
       <div class="row">
         <article class="card" data-product="armchair">
           <div class="card__plate">
@@ -439,7 +460,7 @@ input{caret-color:var(--accent)}
   <section class="sec" id="spec">
     <div class="wrap spec">
       <div>
-        <h2 class="title title--left">Как это сделано</h2>
+        <h2 class="title">Как это сделано</h2>
         <dl class="spec__list">
           <div><dt>Порода</dt><dd>Орех и дуб. Доску досушиваем сами — <span class="num">14</span> месяцев до влажности <span class="num">8 %</span></dd></div>
           <div><dt>Покрытие</dt><dd>Масло с воском. Без плёнки, без запаха, обновляется точечно</dd></div>
@@ -459,27 +480,60 @@ input{caret-color:var(--accent)}
   <!-- 4. INTERIORS -->
   <section class="sec" id="interiors">
     <div class="wrap">
-      <div class="sec__head"><h2 class="title">В интерьере</h2></div>
+      <div class="sec__head">
+        <h2 class="title">В интерьере</h2>
+        <p class="sec__note">Снято у заказчиков — без стилиста и реквизита, мебель стоит так, как ею пользуются.</p>
+      </div>
       <div class="gal">
         <figure class="gal--a">
-          <div class="gal__frame"><img src="images/interior-living.webp" alt="Модульный диван Волна и стол Галька у оштукатуренной стены"></div>
-          <figcaption><h3>Гостиная</h3><p>Диван «Волна», стол «Галька»</p></figcaption>
+          <div class="gal__frame">
+            <span class="gal__tag">Гостиная</span>
+            <img src="images/interior-living.webp" alt="Модульный диван Волна и стол Галька у оштукатуренной стены">
+          </div>
+          <figcaption>
+            <h3>Диван «Волна», стол «Галька»</h3>
+            <p class="num">Петербург, 86 м²</p>
+          </figcaption>
         </figure>
         <figure class="gal--b">
-          <div class="gal__frame"><img src="images/interior-reading.webp" alt="Кресло Мыс у окна со столиком и книгами"></div>
-          <figcaption><h3>Угол для чтения</h3><p>Кресло «Мыс»</p></figcaption>
+          <div class="gal__frame">
+            <span class="gal__tag">Угол для чтения</span>
+            <img src="images/interior-reading.webp" alt="Кресло Мыс у окна со столиком и книгами">
+          </div>
+          <figcaption>
+            <h3>Кресло «Мыс»</h3>
+            <p class="num">Москва, 54 м²</p>
+          </figcaption>
         </figure>
         <figure class="gal--c">
-          <div class="gal__frame"><img src="images/interior-bedroom.webp" alt="Дубовая кровать с льняным бельём"></div>
-          <figcaption><h3>Спальня</h3><p>Кровать «Тишь», массив дуба</p></figcaption>
+          <div class="gal__frame">
+            <span class="gal__tag">Спальня</span>
+            <img src="images/interior-bedroom.webp" alt="Дубовая кровать с льняным бельём">
+          </div>
+          <figcaption>
+            <h3>Кровать «Тишь»</h3>
+            <p class="num">Петербург, 71 м²</p>
+          </figcaption>
         </figure>
         <figure class="gal--d">
-          <div class="gal__frame"><img src="images/interior-workshop.webp" alt="Дубовый стол со стулом и полками"></div>
-          <figcaption><h3>Рабочий стол</h3><p>Стол «Круг», стул «Плёс»</p></figcaption>
+          <div class="gal__frame">
+            <span class="gal__tag">Кабинет</span>
+            <img src="images/interior-workshop.webp" alt="Дубовый стол со стулом и полками">
+          </div>
+          <figcaption>
+            <h3>Стол «Круг», стул «Плёс»</h3>
+            <p class="num">Казань, 43 м²</p>
+          </figcaption>
         </figure>
         <figure class="gal--e">
-          <div class="gal__frame"><img src="images/interior-dining.webp" alt="Круглый дубовый стол и два стула у окна"></div>
-          <figcaption><h3>Обеденная</h3><p>Стол «Круг», стулья «Плёс»</p></figcaption>
+          <div class="gal__frame">
+            <span class="gal__tag">Обеденная</span>
+            <img src="images/interior-dining.webp" alt="Круглый дубовый стол и два стула у окна">
+          </div>
+          <figcaption>
+            <h3>Стол «Круг», стулья «Плёс»</h3>
+            <p class="num">Петербург, 92 м²</p>
+          </figcaption>
         </figure>
       </div>
     </div>
@@ -496,7 +550,10 @@ input{caret-color:var(--accent)}
   <!-- 6. PRICE LIST -->
   <section class="sec" id="price">
     <div class="wrap">
-      <h2 class="title title--left">Прайс</h2>
+      <div class="sec__head">
+        <h2 class="title">Прайс</h2>
+        <p class="sec__note">Цены за изделие в базовой отделке. Другая порода или ткань — пересчитаем.</p>
+      </div>
       <table class="price">
         <thead>
           <tr><th scope="col">Изделие</th><th scope="col">Материал</th><th scope="col">Размер, см</th><th scope="col">Цена</th></tr>
@@ -569,7 +626,7 @@ input{caret-color:var(--accent)}
     </div>
 
     <div class="ftr__base">
-      <span>© 2026 VOLNA</span>
+      <span>©&nbsp;2026 VOLNA</span>
       <span>Санкт-Петербург, наб. Обводного канала 74</span>
     </div>
   </div>
