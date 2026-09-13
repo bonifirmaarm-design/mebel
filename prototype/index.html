@@ -617,6 +617,85 @@ input{caret-color:var(--accent)}
   .ftr__cols{grid-template-columns:1fr 1fr;gap:22px}
 }
 
+
+/* ---------- search ---------- */
+.search__x{
+  width:20px;height:20px;flex:0 0 20px;border-radius:999px;
+  display:grid;place-items:center;color:var(--ink-3);
+  transition:color .25s var(--ease);
+}
+.search__x:hover{color:var(--ink)}
+.search__x svg{width:11px;height:11px}
+
+.srch{
+  position:fixed;left:0;right:0;top:58px;z-index:68;
+  background:var(--surface);border-bottom:1px solid var(--line);
+  box-shadow:0 24px 40px rgba(31,22,12,.10);
+  max-height:calc(100dvh - 58px);overflow-y:auto;
+}
+.srch__in{max-width:var(--max);margin-inline:auto;padding:14px var(--pad) 24px}
+.srch__count{
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+  padding-bottom:8px;
+}
+.srch__group{padding-top:14px}
+.srch__group + .srch__group{margin-top:10px;border-top:1px solid var(--line)}
+.srch__kind{
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+  padding-bottom:4px;
+}
+.srch__row{
+  width:100%;text-align:left;display:grid;align-items:center;gap:14px;
+  grid-template-columns:52px 1fr auto;
+  padding-block:11px;border-bottom:1px solid var(--line);
+  transition:background .25s var(--ease);
+}
+.srch__row:last-child{border-bottom:none}
+.srch__row:hover,.srch__row:focus-visible{background:color-mix(in srgb,var(--plate-2) 45%,transparent)}
+.srch__row--plain{grid-template-columns:1fr auto}
+.srch__plate{
+  width:52px;aspect-ratio:1;border-radius:10px;background:var(--plate-2);
+  display:grid;place-items:center;padding:5px;
+}
+.srch__plate img{width:100%;height:100%;object-fit:contain}
+.srch__text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.srch__name{font-size:14px}
+.srch__meta{font-size:12px;color:var(--ink-3)}
+.srch__price{font-size:13.5px;white-space:nowrap}
+.srch__go{font-size:12px;color:var(--ink-3);white-space:nowrap}
+mark{background:color-mix(in srgb,var(--accent) 20%,transparent);color:inherit;border-radius:3px;padding:0 2px}
+
+.srch__empty{padding:18px 0 6px}
+.srch__empty p{margin:0 0 4px;font-size:15px}
+.srch__empty span{font-size:13px;color:var(--ink-2)}
+.srch__chips{display:flex;gap:8px;flex-wrap:wrap;padding-top:14px}
+.srch__chips button{
+  padding:8px 15px;border-radius:999px;border:1px solid var(--line);
+  font-size:12.5px;color:var(--ink-2);
+  transition:border-color .25s var(--ease),color .25s var(--ease);
+}
+.srch__chips button:hover{border-color:var(--ink);color:var(--ink)}
+
+/* the found row flashes once so the eye lands on it after the jump */
+@keyframes srch-land{
+  0%{background:color-mix(in srgb,var(--accent) 16%,transparent)}
+  100%{background:transparent}
+}
+.is-found{animation:srch-land 1.8s var(--ease)}
+
+/* phone: the bar turns into the search field */
+@media(max-width:640px){
+  .hdr[data-search="true"] .search{display:flex;flex:1;width:auto}
+  .hdr[data-search="true"] .hdr__logo,
+  .hdr[data-search="true"] .hdr__l,
+  .hdr[data-search="true"] #fav-btn,
+  .hdr[data-search="true"] #cart-btn{display:none}
+  .srch__row{grid-template-columns:44px 1fr;gap:12px}
+  .srch__plate{width:44px}
+  .srch__price,.srch__go{grid-column:2;font-size:12.5px;color:var(--ink-2)}
+  .srch__row--plain{grid-template-columns:1fr}
+}
+
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .band img,.gal__frame img{scale:1}
@@ -640,8 +719,11 @@ input{caret-color:var(--accent)}
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
           <circle cx="8.6" cy="8.6" r="5.4"/><path d="M12.6 12.6 17 17"/>
         </svg>
-        <label for="q" class="vh">Поиск</label>
-        <input id="q" type="search" placeholder="Поиск">
+        <label for="q" class="vh">Поиск по каталогу</label>
+        <input id="q" type="text" autocomplete="off" placeholder="Предмет, материал, комната">
+        <button class="search__x" type="button" id="q-clear" hidden aria-label="Очистить">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8"/></svg>
+        </button>
       </div>
 
       <div class="hdr__icons">
@@ -661,6 +743,10 @@ input{caret-color:var(--accent)}
   </div>
 
 </header>
+
+<div class="srch" id="results" hidden>
+  <div class="srch__in"></div>
+</div>
 
 <nav class="menu" id="menu" hidden>
     <a href="#collection">Коллекция</a>
@@ -1238,10 +1324,221 @@ input{caret-color:var(--accent)}
   var wide = window.matchMedia('(min-width: 861px)');
   wide.addEventListener('change', function (e) { if (e.matches) setMenu(false); });
 
-  document.getElementById('search-btn').addEventListener('click', function () {
-    setMenu(true);
-    var field = document.getElementById('q');
-    if (field) field.focus();
+  /* ---- search ------------------------------------------------------------
+     One index over the things the page actually holds: the products, the
+     rooms in the interiors gallery, and the sections themselves, because
+     people search to navigate as often as to find. */
+  var INDEX = [];
+  Object.keys(CATALOG).forEach(function (id) {
+    var p = CATALOG[id];
+    INDEX.push({ kind: 'Каталог', id: id, title: p.name, meta: p.meta, price: p.price, img: p.img, target: '#price' });
+  });
+  document.querySelectorAll('.gal figure').forEach(function (fig) {
+    INDEX.push({
+      kind: 'В интерьере',
+      title: fig.querySelector('.gal__tag').textContent,
+      meta: fig.querySelector('h3').textContent + ' · ' + fig.querySelector('p').textContent,
+      target: '#interiors'
+    });
+  });
+  [['Как это сделано', 'Порода, влажность, покрытие, крепёж, каркас, букле, ротанг, срок, гарантия', '#spec'],
+   ['Новая коллекция', 'Зима 2026, диваны, кресла, столы, стулья', '#collection'],
+   ['Мастерская', 'Адрес, часы работы, телефон, доставка, сборка, предоплата', '#contact']
+  ].forEach(function (r) {
+    INDEX.push({ kind: 'Раздел', title: r[0], meta: r[1], target: r[2] });
+  });
+
+  function norm(t) { return t.toLowerCase().replace(/ё/g, 'е').replace(/[«»"',.]/g, ' '); }
+
+  function search(raw) {
+    var words = norm(raw).split(/\s+/).filter(Boolean);
+    if (!words.length) return [];
+    return INDEX.map(function (item) {
+        var title = norm(item.title), meta = norm(item.meta || '');
+        var score = 0;
+        for (var i = 0; i < words.length; i++) {
+          var w = words[i];
+          if (title.indexOf(w) === 0) score += 6;
+          else if (title.indexOf(w) > -1) score += 4;
+          else if (meta.indexOf(w) > -1) score += 2;
+          else return null;              /* every word must land somewhere */
+        }
+        return { item: item, score: score };
+      })
+      .filter(Boolean)
+      .sort(function (a, b) { return b.score - a.score; })
+      .map(function (r) { return r.item; });
+  }
+
+  /* wrap the typed part where it appears, without trusting it as markup */
+  function mark(text, raw) {
+    var words = norm(raw).split(/\s+/).filter(Boolean);
+    var hay = norm(text), hits = [];
+    words.forEach(function (w) {
+      var from = 0, at;
+      while ((at = hay.indexOf(w, from)) > -1) { hits.push([at, at + w.length]); from = at + w.length; }
+    });
+    if (!hits.length) return document.createTextNode(text);
+    hits.sort(function (a, b) { return a[0] - b[0]; });
+    var frag = document.createDocumentFragment(), cursor = 0;
+    hits.forEach(function (h) {
+      if (h[0] < cursor) return;
+      frag.appendChild(document.createTextNode(text.slice(cursor, h[0])));
+      var m = document.createElement('mark');
+      m.textContent = text.slice(h[0], h[1]);
+      frag.appendChild(m);
+      cursor = h[1];
+    });
+    frag.appendChild(document.createTextNode(text.slice(cursor)));
+    return frag;
+  }
+
+  var field = document.getElementById('q');
+  var clearBtn = document.getElementById('q-clear');
+  var panel = document.getElementById('results');
+  var panelIn = panel.querySelector('.srch__in');
+  var searchBtn = document.getElementById('search-btn');
+
+  function land(target, productId) {
+    var node = document.querySelector(target);
+    if (node) node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (productId) {
+      var row = document.querySelector('.lot[data-product="' + productId + '"]');
+      if (row) {
+        row.classList.remove('is-found');
+        void row.offsetWidth;
+        row.classList.add('is-found');
+      }
+    }
+    closeSearch();
+  }
+
+  function row(item, raw) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'srch__row' + (item.img ? '' : ' srch__row--plain');
+    if (item.img) {
+      var plate = document.createElement('span');
+      plate.className = 'srch__plate';
+      var img = document.createElement('img');
+      img.src = item.img; img.alt = '';
+      plate.appendChild(img);
+      b.appendChild(plate);
+    }
+    var text = document.createElement('span');
+    text.className = 'srch__text';
+    var name = document.createElement('span');
+    name.className = 'srch__name';
+    name.appendChild(mark(item.title, raw));
+    var meta = document.createElement('span');
+    meta.className = 'srch__meta';
+    meta.appendChild(mark(item.meta || '', raw));
+    text.appendChild(name); text.appendChild(meta);
+    b.appendChild(text);
+
+    var right = document.createElement('span');
+    if (item.price) { right.className = 'srch__price num'; right.textContent = money(item.price); }
+    else { right.className = 'srch__go'; right.textContent = 'Перейти'; }
+    b.appendChild(right);
+
+    b.addEventListener('click', function () { land(item.target, item.id); });
+    return b;
+  }
+
+  var POPULAR = ['Кресло', 'Ротанг', 'Букле', 'Спальня', 'Гарантия'];
+
+  function renderResults(raw) {
+    panelIn.replaceChildren();
+    var q = raw.trim();
+    if (!q) { panel.hidden = true; return; }
+
+    var hits = search(q);
+    panel.hidden = false;
+
+    if (!hits.length) {
+      var empty = document.createElement('div');
+      empty.className = 'srch__empty';
+      var p1 = document.createElement('p');
+      p1.textContent = 'Ничего не нашлось по запросу «' + q + '»';
+      var p2 = document.createElement('span');
+      p2.textContent = 'Поищите по названию предмета, материалу или комнате.';
+      empty.appendChild(p1); empty.appendChild(p2);
+      var chips = document.createElement('div');
+      chips.className = 'srch__chips';
+      POPULAR.forEach(function (w) {
+        var c = document.createElement('button');
+        c.type = 'button'; c.textContent = w;
+        c.addEventListener('click', function () { field.value = w; onType(); field.focus(); });
+        chips.appendChild(c);
+      });
+      empty.appendChild(chips);
+      panelIn.appendChild(empty);
+      return;
+    }
+
+    var count = document.createElement('p');
+    count.className = 'srch__count';
+    var n = hits.length;
+    var word = n % 10 === 1 && n % 100 !== 11 ? 'результат'
+      : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'результата' : 'результатов');
+    count.textContent = n + ' ' + word;
+    panelIn.appendChild(count);
+
+    var groups = {};
+    hits.forEach(function (h) { (groups[h.kind] = groups[h.kind] || []).push(h); });
+    Object.keys(groups).forEach(function (kind) {
+      var g = document.createElement('div');
+      g.className = 'srch__group';
+      var k = document.createElement('p');
+      k.className = 'srch__kind';
+      k.textContent = kind;
+      g.appendChild(k);
+      groups[kind].slice(0, 6).forEach(function (item) { g.appendChild(row(item, q)); });
+      panelIn.appendChild(g);
+    });
+  }
+
+  function onType() {
+    clearBtn.hidden = !field.value;
+    renderResults(field.value);
+  }
+
+  function openSearch() {
+    setMenu(false);
+    hdr.dataset.search = 'true';
+    field.focus();
+    if (field.value) renderResults(field.value);
+  }
+  function closeSearch() {
+    panel.hidden = true;
+    hdr.dataset.search = 'false';
+  }
+
+  field.addEventListener('input', onType);
+  field.addEventListener('focus', function () { if (field.value) renderResults(field.value); });
+  field.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') { closeSearch(); field.blur(); }
+    if (ev.key === 'Enter') {
+      ev.preventDefault();
+      var first = panelIn.querySelector('.srch__row');
+      if (first) first.click();
+    }
+    if (ev.key === 'ArrowDown') {
+      var r = panelIn.querySelector('.srch__row');
+      if (r) { ev.preventDefault(); r.focus(); }
+    }
+  });
+  clearBtn.addEventListener('click', function () {
+    field.value = '';
+    onType();
+    field.focus();
+  });
+  searchBtn.addEventListener('click', function () {
+    if (hdr.dataset.search === 'true') { closeSearch(); } else { openSearch(); }
+  });
+  document.addEventListener('click', function (ev) {
+    if (panel.hidden) return;
+    if (!panel.contains(ev.target) && !ev.target.closest('.search') && ev.target !== searchBtn) closeSearch();
   });
 
   document.getElementById('cart-btn').addEventListener('click', function () { setMenu(false); openDrawer('cart', this); });
