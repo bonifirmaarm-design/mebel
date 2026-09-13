@@ -11,7 +11,8 @@ docs/
   images/         10 фотографий
   fonts/          Unbounded и Onest, 8 файлов
   fonts.css       подключение шрифтов
-  vendor/         GSAP, ScrollTrigger, Lenis
+  lib/            GSAP, ScrollTrigger, Lenis
+  .nojekyll       отключает сборку Jekyll на GitHub Pages
 ```
 
 ## Как выложить
@@ -25,6 +26,10 @@ Settings → Pages → Source: **Deploy from a branch**, Branch: **main**,
 
 Через пару минут сайт будет на `https://bonifirmaarm-design.github.io/mebel/`.
 
+Файл `.nojekyll` в `docs/` обязателен. Без него GitHub Pages прогоняет папку
+через Jekyll: тот показывает README вместо `index.html` и вдобавок молча
+выбрасывает папку с библиотеками, если назвать её `vendor`.
+
 ### Netlify или Vercel — если нужен свой домен
 
 Перетащить папку `docs` на [app.netlify.com/drop](https://app.netlify.com/drop).
@@ -33,7 +38,7 @@ Settings → Pages → Source: **Deploy from a branch**, Branch: **main**,
 ### Обычный хостинг
 
 Залить содержимое `docs/` в корень сайта по FTP. `index.html` должен лежать
-в корне, папки `images`, `fonts`, `vendor` и файл `fonts.css` — рядом с ним.
+в корне, папки `images`, `fonts`, `lib` и файл `fonts.css` — рядом с ним.
 
 ## Интернет не нужен
 

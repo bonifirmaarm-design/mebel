@@ -60,6 +60,10 @@
 
 ## Стек
 
-Один HTML-файл без сборки: GSAP + ScrollTrigger с cdnjs, Lenis с jsdelivr,
-шрифты с Google Fonts. Папка `docs/` самодостаточна и открывается как есть.
+Один HTML-файл без сборки. Шрифты, GSAP, ScrollTrigger и Lenis лежат внутри
+`docs/` — внешних ссылок в документе нет. Папка открывается как есть, без сети.
+
+`docs/.nojekyll` не удалять: без него GitHub Pages подменяет `index.html`
+на README и выбрасывает служебные папки.
+
 Дальше разворачивается в Next.js.
