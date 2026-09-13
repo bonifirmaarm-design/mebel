@@ -1,662 +1,514 @@
 <title>VOLNA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600&family=Unbounded:wght@200;300;400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Onest:wght@300;400;500&display=swap">
 
 <style>
-/* ========== tokens ========== */
+/* ---------- tokens ---------- */
 :root{
-  --ground:#EDE8E0;
-  --ground-2:#E4DDD2;
-  --surface:#F7F4EF;
-  --plate:#F1ECE4;          /* photo plates stay light in both themes */
-  --plate-2:#E7E0D5;
-  --ink:#211C17;
-  --ink-2:#6B6157;
-  --ink-3:#9A9086;
-  --line:#D6CDC0;
+  --ground:#EFEBE5;
+  --surface:#FBF9F5;
+  --plate:#F1EDE6;
+  --plate-2:#E6E0D6;
+  --ink:#1F1B17;
+  --ink-2:#6C635A;
+  --ink-3:#9C9389;
+  --line:#D8D0C4;
   --accent:#7A4A22;
-  --accent-2:#A97A4E;
-  --dark:#211C17;
-  --on-dark:#EDE8E0;
-  --on-dark-2:#9A9086;
-  --dark-line:#3B332B;
+  --dark:#2A251F;
+  --on-dark:#EFEBE5;
+  --on-dark-2:#9C9389;
+  --dark-line:#413A32;
 
-  --r-lg:28px;
-  --r-md:18px;
-  --pad:clamp(16px,4vw,44px);
-  --gap:clamp(12px,1.6vw,20px);
-  --max:1340px;
-
+  --r:16px;
+  --pad:clamp(16px,3.4vw,40px);
+  --gap:clamp(10px,1.3vw,16px);
+  --max:1280px;
   --ease:cubic-bezier(.22,.61,.36,1);
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --ground:#17130F;
-    --ground-2:#201A15;
-    --surface:#221C16;
-    --plate:#E7E0D5;
-    --plate-2:#D8D0C3;
-    --ink:#EDE8E0;
-    --ink-2:#A79C90;
-    --ink-3:#786D61;
-    --line:#332B23;
-    --accent:#C08F5E;
-    --accent-2:#A97A4E;
-    --dark:#0F0C09;
-    --on-dark:#EDE8E0;
-    --on-dark-2:#9A9086;
-    --dark-line:#2A231C;
+    --ground:#16120F;--surface:#1E1914;--plate:#E6E0D6;--plate-2:#D5CDC0;
+    --ink:#EFEBE5;--ink-2:#A79D91;--ink-3:#776D62;--line:#312A23;
+    --accent:#C08F5E;--dark:#0E0B09;--on-dark:#EFEBE5;--on-dark-2:#9C9389;--dark-line:#2A231C;
   }
 }
 :root[data-theme="dark"]{
-  --ground:#17130F;
-  --ground-2:#201A15;
-  --surface:#221C16;
-  --plate:#E7E0D5;
-  --plate-2:#D8D0C3;
-  --ink:#EDE8E0;
-  --ink-2:#A79C90;
-  --ink-3:#786D61;
-  --line:#332B23;
-  --accent:#C08F5E;
-  --accent-2:#A97A4E;
-  --dark:#0F0C09;
-  --on-dark:#EDE8E0;
-  --on-dark-2:#9A9086;
-  --dark-line:#2A231C;
+  --ground:#16120F;--surface:#1E1914;--plate:#E6E0D6;--plate-2:#D5CDC0;
+  --ink:#EFEBE5;--ink-2:#A79D91;--ink-3:#776D62;--line:#312A23;
+  --accent:#C08F5E;--dark:#0E0B09;--on-dark:#EFEBE5;--on-dark-2:#9C9389;--dark-line:#2A231C;
 }
 
-/* ========== base ========== */
+/* ---------- base ---------- */
 *{box-sizing:border-box}
 body{
-  margin:0;
-  background:var(--ground);
-  color:var(--ink);
+  margin:0;background:var(--ground);color:var(--ink);
   font-family:"Onest",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  font-size:15px;
-  line-height:1.55;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
-button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
-:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
-
+button,input{font:inherit;color:inherit;background:none;border:none}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
 .wrap{max-width:var(--max);margin-inline:auto;padding-inline:var(--pad)}
-
-/* type roles */
-.eyebrow{
-  font-size:11px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--ink-2);font-weight:500;
-}
-.section-title{
-  margin:0;
-  font-size:clamp(13px,1.5vw,15px);
-  letter-spacing:.24em;text-transform:uppercase;font-weight:500;
-  text-align:center;
-}
-.lede{
-  font-size:clamp(15px,1.35vw,17px);
-  color:var(--ink-2);max-width:62ch;
-}
 .num{font-variant-numeric:tabular-nums}
 
-/* ========== pills ========== */
+/* section title — light, centred, wide tracking (KANNO) */
+.title{
+  font-family:"Golos Text",sans-serif;font-weight:500;
+  font-size:clamp(13px,1.4vw,16px);letter-spacing:.26em;text-transform:uppercase;
+  margin:0;text-align:center;
+}
+.title--left{text-align:left;letter-spacing:.2em;font-size:clamp(14px,1.9vw,22px)}
+.label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ---------- pill ---------- */
 .pill{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:9px 16px;border-radius:999px;
-  border:1px solid var(--line);
-  font-size:12px;letter-spacing:.06em;
-  color:var(--ink-2);
-  background:transparent;
-  transition:background .35s var(--ease),color .35s var(--ease),border-color .35s var(--ease);
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 15px;border-radius:999px;border:1px solid var(--line);
+  font-size:11.5px;letter-spacing:.04em;color:var(--ink-2);
+  transition:border-color .3s var(--ease),color .3s var(--ease);
   white-space:nowrap;
 }
 .pill:hover{border-color:var(--ink-2);color:var(--ink)}
-.pill[aria-pressed="true"],.pill--solid{
-  background:var(--ink);border-color:var(--ink);color:var(--ground);
+.pill--solid,.pill[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+.pill--solid:hover{color:var(--ground)}
+.pill--icon{padding-inline-start:5px}
+.dot{
+  width:24px;height:24px;flex:0 0 24px;border-radius:999px;display:grid;place-items:center;
+  background:var(--accent);color:#FBF9F5;transition:transform .4s var(--ease);
 }
-:root[data-theme="dark"] .pill[aria-pressed="true"],
-:root[data-theme="dark"] .pill--solid{color:var(--ground-2)}
-.pill--icon{padding-inline-start:6px}
-.pill__dot{
-  width:26px;height:26px;border-radius:999px;flex:0 0 26px;
-  display:grid;place-items:center;
-  background:var(--accent);color:#FBF7F1;
-  transition:transform .4s var(--ease);
-}
-.pill--icon:hover .pill__dot{transform:rotate(45deg)}
-.pill__dot svg{width:11px;height:11px}
+.pill--icon:hover .dot{transform:rotate(45deg)}
+.dot svg{width:10px;height:10px}
 
-/* ========== header ========== */
-.hdr{
-  position:sticky;top:0;z-index:60;
-  background:color-mix(in srgb,var(--ground) 86%,transparent);
-  backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);
+/* ---------- header ---------- */
+.hdr{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(12px)}
+.hdr__in{display:flex;align-items:center;gap:18px;height:56px}
+.hdr__l,.hdr__r{display:flex;align-items:center;gap:18px;flex:1}
+.hdr__r{justify-content:flex-end}
+.hdr a,.hdr button{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);transition:color .3s}
+.hdr a:hover,.hdr button:hover{color:var(--ink)}
+.burger{display:flex;flex-direction:column;gap:4px;width:17px}
+.burger i{height:1px;background:var(--ink);display:block}
+.hdr__logo{
+  font-family:"Golos Text",sans-serif;font-weight:600;
+  font-size:14px;letter-spacing:.3em;padding-left:.3em;color:var(--ink);
 }
-.hdr__in{
-  display:flex;align-items:center;gap:20px;
-  height:58px;
+.search{
+  display:flex;align-items:center;gap:7px;
+  border:1px solid var(--line);border-radius:999px;padding:5px 13px;width:190px;
 }
-.hdr__nav{display:flex;gap:22px;flex:1}
-.hdr__nav a{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);transition:color .3s}
-.hdr__nav a:hover{color:var(--ink)}
-.hdr__mark{
-  font-family:"Unbounded",sans-serif;font-weight:300;
-  font-size:15px;letter-spacing:.34em;padding-left:.34em;
-}
-.hdr__end{display:flex;gap:18px;flex:1;justify-content:flex-end;align-items:center}
-.hdr__end button{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);transition:color .3s}
-.hdr__end button:hover{color:var(--ink)}
-@media(max-width:760px){
-  .hdr__nav{display:none}
-  .hdr__mark{flex:1}
-  .hdr__end button:nth-child(2){display:none}
+.search input{width:100%;font-size:11.5px;padding:0}
+.search input::placeholder{color:var(--ink-3)}
+.search input:focus{outline:none}
+.search svg{width:11px;height:11px;flex:0 0 11px;color:var(--ink-3)}
+@media(max-width:900px){.search{width:130px}}
+@media(max-width:720px){
+  .hdr__l a,.search,.hdr__r button:first-child{display:none}
+  .hdr__logo{flex:1}
 }
 
-/* ========== hero ========== */
-.hero{padding-block:clamp(28px,5vw,64px) 0}
-.hero__top{
-  display:grid;grid-template-columns:1fr auto;gap:24px;align-items:start;
-  margin-bottom:clamp(20px,3vw,40px);
-}
-.hero__claim{
-  display:flex;flex-direction:column;gap:3px;
-  font-size:clamp(11px,1.05vw,13px);letter-spacing:.17em;text-transform:uppercase;font-weight:500;
-}
-.hero__note{max-width:34ch;font-size:13px;color:var(--ink-2);text-align:right}
-.hero__note b{display:block;font-weight:500;color:var(--ink);margin-top:8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
-@media(max-width:700px){
-  .hero__top{grid-template-columns:1fr}
-  .hero__note{text-align:left}
-}
-
-/* stage: wordmark + cut-out pieces sharing one baseline */
-.stage{position:relative;isolation:isolate}
+/* ---------- hero ---------- */
+.hero{padding-top:clamp(22px,4vw,52px)}
 .mark{
-  font-family:"Unbounded",sans-serif;font-weight:300;
-  font-size:clamp(2.9rem,18.2vw,15.2rem);
-  line-height:.82;letter-spacing:-.04em;
-  margin:0;display:flex;justify-content:space-between;
-  color:var(--ink);
-  user-select:none;
+  font-family:"Golos Text",sans-serif;font-weight:700;
+  font-size:clamp(2.8rem,23.5vw,19.5rem);
+  line-height:.8;letter-spacing:-.02em;margin:0;
+  display:flex;justify-content:space-between;
+  position:relative;z-index:1;user-select:none;
 }
 .mark span{display:block;transform-origin:50% 100%}
-.stage__pieces{
-  position:absolute;inset:auto 0 0 0;
-  height:100%;pointer-events:none;
-}
-.piece{
-  position:absolute;bottom:0;
-  filter:drop-shadow(0 26px 34px rgba(33,24,14,.17));
-  will-change:transform;
-}
-.piece--chair{left:2%;width:clamp(78px,12.5vw,182px);z-index:3}
-.piece--armchair{left:50%;translate:-50% 0;width:clamp(132px,22vw,330px);z-index:4}
-.piece--table{right:1%;width:clamp(98px,15.5vw,232px);z-index:3}
-@media(max-width:640px){
-  .piece--chair{display:none}
-  .piece--table{width:88px;right:-2%}
-  .piece--armchair{width:44vw}
-}
-.stage__base{
-  height:1px;background:var(--line);
-  margin-top:clamp(14px,2.2vw,26px);
-}
 
-/* filter row */
-.filters{
-  display:flex;gap:8px;flex-wrap:wrap;align-items:center;
-  padding-block:clamp(18px,2.4vw,30px);
+.rail{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:clamp(10px,2.2vw,30px);
+  border-bottom:1px solid var(--line);padding-bottom:clamp(10px,1.4vw,18px);
 }
-.filters__spacer{flex:1}
-@media(max-width:640px){.filters__spacer{display:none}}
+.rail__claim{
+  display:flex;flex-direction:column;gap:2px;flex:0 0 auto;
+  font-family:"Golos Text",sans-serif;font-weight:500;
+  font-size:clamp(9.5px,.88vw,11.5px);letter-spacing:.15em;text-transform:uppercase;
+  padding-bottom:4px;
+}
+/* each piece keeps its own footprint, so the row reads as a set of objects */
+.mini{flex:0 0 auto;filter:drop-shadow(0 10px 14px rgba(31,22,12,.13))}
+.mini--chair{width:clamp(42px,5.6vw,82px)}
+.mini--table{width:clamp(54px,7.4vw,108px)}
+.mini--sofa{width:clamp(74px,10.2vw,150px)}
+.hero__seat{
+  width:clamp(118px,17.5vw,262px);flex:0 0 auto;
+  margin-top:clamp(-205px,-13.6vw,-58px);
+  position:relative;z-index:3;
+  filter:drop-shadow(0 26px 32px rgba(31,22,12,.18));
+}
+.rail__note{
+  margin:0 0 4px;max-width:26ch;text-align:right;flex:0 1 auto;
+  font-size:12px;color:var(--ink-2);
+}
+.rail__note a{color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:1px}
+@media(max-width:820px){
+  .rail{flex-wrap:wrap;justify-content:center}
+  .rail__claim{order:2;flex:1 1 100%;align-items:center;padding-top:14px}
+  .rail__note{order:3;margin:0 auto;text-align:center;max-width:34ch}
+}
+@media(max-width:520px){.mini:nth-of-type(2){display:none}}
 
-/* ========== section shell ========== */
-.sec{padding-block:clamp(48px,7vw,104px)}
-.sec__head{display:flex;flex-direction:column;gap:10px;align-items:center;margin-bottom:clamp(26px,3.6vw,48px)}
+/* ---------- collection ---------- */
+.sec{padding-block:clamp(46px,6.5vw,96px)}
+.sec__head{margin-bottom:clamp(22px,3vw,40px)}
+.row{display:grid;gap:var(--gap);grid-template-columns:repeat(4,1fr)}
+@media(max-width:860px){.row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:420px){.row{grid-template-columns:1fr}}
 
-/* ========== product grid ========== */
-.grid{
-  display:grid;gap:var(--gap);
-  grid-template-columns:repeat(5,1fr);
-}
-/* the modular sofa is 3 m wide — it gets a plate shaped like the object */
-.card--wide{grid-column:span 2}
-.card--wide .card__plate{aspect-ratio:16/11;padding:9% 8%}
-@media(max-width:900px){
-  .grid{grid-template-columns:repeat(2,1fr)}
-  .card--wide{grid-column:span 2}
-}
-@media(max-width:420px){
-  .grid{grid-template-columns:1fr}
-  .card--wide{grid-column:span 1}
-  .card--wide .card__plate{aspect-ratio:4/3}
-}
-
-.card{display:flex;flex-direction:column;gap:12px}
 .card__plate{
-  position:relative;overflow:hidden;
-  border-radius:var(--r-md);
-  background:var(--plate);
-  aspect-ratio:4/5;
-  display:grid;place-items:center;
-  padding:14% 12% 9%;
+  position:relative;overflow:hidden;border-radius:var(--r);background:var(--plate);
+  aspect-ratio:1/1;display:grid;place-items:end center;padding:16% 13% 10%;
 }
-.card__plate::after{
-  content:"";position:absolute;inset:0;
-  background:radial-gradient(70% 55% at 50% 88%,rgba(122,74,34,.09),transparent 70%);
-  opacity:0;transition:opacity .55s var(--ease);
-}
-.card:hover .card__plate::after{opacity:1}
 .card__plate img{
   width:100%;height:100%;object-fit:contain;object-position:bottom;
   transition:transform .7s var(--ease);
-  filter:drop-shadow(0 16px 20px rgba(33,24,14,.13));
+  filter:drop-shadow(0 14px 18px rgba(31,22,12,.12));
 }
-.card:hover .card__plate img{transform:translateY(-8px) scale(1.035)}
-.card__tag{
-  position:absolute;top:12px;left:12px;z-index:2;
-  font-size:10px;letter-spacing:.14em;text-transform:uppercase;
-  padding:6px 11px;border-radius:999px;
-  background:color-mix(in srgb,var(--plate) 70%,transparent);
-  backdrop-filter:blur(6px);
-  color:#4A4038;
-}
-.card__row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
-.card__name{font-size:14px;font-weight:500;letter-spacing:.02em}
-.card__price{font-size:13px;color:var(--ink-2);white-space:nowrap}
-.card__meta{font-size:11.5px;color:var(--ink-3);letter-spacing:.03em}
+.card:hover .card__plate img{transform:translateY(-7px) scale(1.03)}
+.card__foot{display:flex;flex-direction:column;gap:2px;padding-top:11px}
+.card__name{font-size:13px}
+.card__price{font-size:12.5px;color:var(--ink-2)}
 
-/* ========== about ========== */
-.about{
-  display:grid;
-  grid-template-columns:minmax(0,.86fr) minmax(0,1fr);
-  gap:clamp(22px,4vw,64px);align-items:start;
-}
-.about__figure{position:relative}
-.about__frame{overflow:hidden;border-radius:var(--r-md);background:var(--plate-2)}
-/* tight vertical detail of the same room — the band below carries the wide view */
-.about__frame img{
-  width:100%;aspect-ratio:4/5;object-fit:cover;object-position:24% 62%;
-  scale:1.14;will-change:transform;
-}
-.about__inset{
-  position:absolute;right:-26px;bottom:-40px;width:36%;
-  border-radius:var(--r-md);overflow:hidden;
-  background:var(--plate);
-  border:6px solid var(--ground);
-  display:grid;place-items:end center;padding:12% 10% 6%;
-  aspect-ratio:4/5;
-}
-.about__inset img{width:100%;object-fit:contain}
-@media(max-width:820px){
-  .about{grid-template-columns:1fr}
-  .about__inset{right:0;bottom:-30px;width:30%}
-}
-.about__body{display:flex;flex-direction:column;gap:18px}
-.about__body p{margin:0;color:var(--ink-2);max-width:58ch}
-.about__body p:first-of-type{color:var(--ink);font-size:clamp(16px,1.6vw,19px);line-height:1.45}
-.facts{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:16px;margin-top:12px;padding-top:22px;border-top:1px solid var(--line);
-}
-.facts dt{font-size:clamp(20px,2.4vw,30px);font-family:"Unbounded",sans-serif;font-weight:200;letter-spacing:-.02em}
-.facts dd{margin:6px 0 0;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);line-height:1.35}
+/* ---------- why us (ADAMAS bento) ---------- */
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:clamp(18px,2.4vw,30px)}
+.bar__gap{flex:1}
+@media(max-width:640px){.bar__gap{display:none}}
 
-/* ========== band ========== */
-.band{position:relative;overflow:hidden;border-radius:var(--r-lg);background:var(--plate-2)}
-.band img{width:100%;aspect-ratio:2.35/1;object-fit:cover;scale:1.14;will-change:transform}
-@media(max-width:640px){.band img{aspect-ratio:4/3}}
-.band__line{
-  display:flex;justify-content:flex-end;
-  margin-top:14px;
-}
-.band__line p{
-  margin:0;max-width:46ch;text-align:right;
-  font-size:clamp(12px,1.25vw,14px);letter-spacing:.13em;text-transform:uppercase;line-height:1.5;
-}
-
-/* ========== materials bento ========== */
-.bento{
-  display:grid;gap:var(--gap);
-  grid-template-columns:repeat(2,1fr);
-}
-@media(max-width:820px){.bento{grid-template-columns:1fr}}
-.bento__col{display:grid;gap:var(--gap);align-content:start}
+.bento{display:grid;gap:var(--gap);grid-template-columns:repeat(2,1fr)}
+@media(max-width:860px){.bento{grid-template-columns:1fr}}
+.stack{display:grid;gap:var(--gap);align-content:start}
+.stack--2{grid-template-columns:1fr 1fr}
+@media(max-width:460px){.stack--2{grid-template-columns:1fr}}
 .tile{
-  background:var(--surface);border-radius:var(--r-md);
-  padding:clamp(18px,2.2vw,28px);
-  display:flex;flex-direction:column;gap:9px;
-  border:1px solid var(--line);
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:clamp(16px,1.9vw,24px);display:flex;flex-direction:column;gap:8px;
 }
 .tile h3{
-  margin:0;font-size:12px;letter-spacing:.15em;text-transform:uppercase;font-weight:600;
+  margin:0;font-family:"Golos Text",sans-serif;font-weight:600;
+  font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;
 }
-.tile p{margin:0;font-size:13.5px;color:var(--ink-2);max-width:48ch}
-.tile__spec{
-  margin-top:auto;padding-top:14px;
-  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);
-}
-.tile--pair{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);padding:0;border:none;background:none}
-@media(max-width:480px){.tile--pair{grid-template-columns:1fr}}
-.tile--photo{padding:0;overflow:hidden;background:var(--plate-2)}
-.tile--photo img{width:100%;height:100%;min-height:190px;object-fit:cover}
+.tile p{margin:0;font-size:13px;color:var(--ink-2);max-width:44ch}
+.tile--photo{padding:0;overflow:hidden;border:none;background:var(--plate-2)}
+.tile--photo img{width:100%;aspect-ratio:4/3;object-fit:cover}
 
-/* ========== footer ========== */
-.ftr{
-  background:var(--dark);color:var(--on-dark);
-  border-radius:var(--r-lg) var(--r-lg) 0 0;
-  margin-top:clamp(48px,7vw,96px);
-  padding-block:clamp(36px,5vw,64px) 26px;
+/* ---------- interiors gallery (ref 3) ---------- */
+.gal{display:grid;gap:clamp(14px,2vw,26px);grid-template-columns:repeat(3,1fr);align-items:start}
+@media(max-width:760px){.gal{grid-template-columns:1fr}}
+.gal figure{margin:0}
+.gal__frame{overflow:hidden;border-radius:var(--r);background:var(--plate-2)}
+.gal__frame img{width:100%;object-fit:cover;scale:1.1;will-change:transform}
+.gal figure:nth-child(1) img{aspect-ratio:4/3}
+.gal figure:nth-child(2) img{aspect-ratio:3/4}
+.gal figure:nth-child(3) img{aspect-ratio:4/3}
+.gal figure:nth-child(2){margin-top:clamp(0px,3vw,44px)}
+.gal figcaption{padding-top:10px}
+.gal h3{margin:0 0 3px;font-size:12.5px;font-weight:500}
+.gal p{margin:0;font-size:12px;color:var(--ink-3)}
+
+/* ---------- wide band + line under (KANNO) ---------- */
+.band{overflow:hidden;border-radius:var(--r);background:var(--plate-2)}
+.band img{width:100%;aspect-ratio:2.4/1;object-fit:cover;scale:1.12;will-change:transform}
+@media(max-width:640px){.band img{aspect-ratio:4/3}}
+.band__line{
+  margin:12px 0 0 auto;max-width:44ch;
+  font-family:"Golos Text",sans-serif;font-weight:500;
+  font-size:clamp(11px,1.15vw,13.5px);letter-spacing:.14em;text-transform:uppercase;
+  line-height:1.55;text-align:right;
 }
-.ftr__top{
-  display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
-  gap:clamp(24px,4vw,56px);
-  padding-bottom:clamp(28px,4vw,48px);
-  border-bottom:1px solid var(--dark-line);
+
+/* ---------- terms (ADAMAS columns) ---------- */
+.terms{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1fr);gap:var(--gap)}
+@media(max-width:860px){.terms{grid-template-columns:1fr}}
+.terms__photo{overflow:hidden;border-radius:var(--r);background:var(--plate-2)}
+.terms__photo img{width:100%;height:100%;min-height:260px;object-fit:cover}
+.terms__cols{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap)}
+@media(max-width:640px){.terms__cols{grid-template-columns:1fr}}
+.terms__col{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:clamp(14px,1.6vw,20px);display:flex;flex-direction:column;gap:9px;align-items:flex-start;
 }
-@media(max-width:760px){.ftr__top{grid-template-columns:1fr}}
-.ftr h2{
-  margin:0 0 16px;font-weight:400;
-  font-size:clamp(17px,2.1vw,24px);letter-spacing:.01em;line-height:1.3;
-  max-width:20ch;
+.terms__col ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;width:100%}
+.terms__col li{
+  border:1px solid var(--line);border-radius:12px;padding:9px 12px;
+  font-size:12px;color:var(--ink-2);line-height:1.4;
 }
-.sub{display:flex;gap:10px;border-bottom:1px solid var(--dark-line);padding-bottom:10px;max-width:400px}
-.sub input{
-  flex:1;background:none;border:none;color:var(--on-dark);
-  font:inherit;font-size:13px;padding:4px 0;
+
+/* ---------- contact ---------- */
+.contact{text-align:center}
+.contact h2{
+  margin:0 0 clamp(16px,2.2vw,26px);
+  font-family:"Golos Text",sans-serif;font-weight:500;
+  font-size:clamp(17px,2.7vw,34px);letter-spacing:.05em;text-transform:uppercase;
+  line-height:1.3;text-wrap:balance;
 }
+.contact__row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:clamp(18px,2.4vw,30px)}
+.contact__shot{position:relative;overflow:hidden;border-radius:var(--r);background:var(--plate-2)}
+.contact__shot img{width:100%;aspect-ratio:2.4/1;object-fit:cover}
+@media(max-width:640px){.contact__shot img{aspect-ratio:4/3}}
+.contact__pills{
+  position:absolute;left:0;right:0;bottom:14px;
+  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding-inline:14px;
+}
+.contact__pills .pill{
+  background:color-mix(in srgb,#FBF9F5 82%,transparent);
+  backdrop-filter:blur(6px);border-color:transparent;color:#3A332B;
+}
+.contact__pills .pill--solid{background:#2A251F;color:#EFEBE5}
+
+/* ---------- footer ---------- */
+.ftr{background:var(--dark);color:var(--on-dark);margin-top:clamp(44px,6vw,84px);padding-block:clamp(32px,4.4vw,56px) 22px}
+.ftr__top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(22px,4vw,52px);padding-bottom:clamp(24px,3.4vw,42px);border-bottom:1px solid var(--dark-line)}
+@media(max-width:720px){.ftr__top{grid-template-columns:1fr}}
+.ftr h2{margin:0 0 14px;font-family:"Golos Text",sans-serif;font-weight:400;font-size:clamp(15px,1.7vw,19px);max-width:22ch;line-height:1.35}
+.sub{display:flex;gap:10px;border-bottom:1px solid var(--dark-line);padding-bottom:9px;max-width:340px}
+.sub input{flex:1;font-size:12.5px;padding:3px 0}
 .sub input::placeholder{color:var(--on-dark-2)}
 .sub input:focus{outline:none}
-.sub button{
-  width:32px;height:32px;border-radius:999px;flex:0 0 32px;
-  background:var(--on-dark);color:var(--dark);
-  display:grid;place-items:center;
-  transition:transform .4s var(--ease);
-}
+.sub button{width:28px;height:28px;flex:0 0 28px;border-radius:999px;background:var(--on-dark);color:var(--dark);display:grid;place-items:center;transition:transform .4s var(--ease)}
 .sub button:hover{transform:rotate(45deg)}
-.sub button svg{width:12px;height:12px}
-.ftr__cols{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-@media(max-width:480px){.ftr__cols{grid-template-columns:repeat(2,1fr)}}
-.ftr__cols h4{margin:0 0 12px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--on-dark-2);font-weight:500}
-.ftr__cols ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;font-size:13px}
-.ftr__cols a{color:var(--on-dark);opacity:.85;transition:opacity .3s}
-.ftr__cols a:hover{opacity:1}
+.sub button svg{width:11px;height:11px}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.cols h4{margin:0 0 10px;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--on-dark-2);font-weight:500}
+.cols ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:12.5px}
+.cols a{opacity:.85;transition:opacity .3s}
+.cols a:hover{opacity:1}
 .ftr__mark{
-  font-family:"Unbounded",sans-serif;font-weight:200;
-  font-size:clamp(2.6rem,16.5vw,13.5rem);line-height:.8;letter-spacing:-.04em;
+  font-family:"Golos Text",sans-serif;font-weight:700;
+  font-size:clamp(2.4rem,20vw,16.5rem);line-height:.8;letter-spacing:-.02em;
   display:flex;justify-content:space-between;
-  padding-block:clamp(24px,4vw,48px) 18px;
-  color:var(--on-dark);opacity:.16;user-select:none;
+  padding-block:clamp(20px,3.4vw,42px) 16px;opacity:.13;user-select:none;
 }
-.ftr__base{
-  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
-  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--on-dark-2);
-}
+.ftr__base{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--on-dark-2)}
 
-/* ========== motion ========== */
-.drift{will-change:transform}
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-  .band img,.about__frame img{scale:1}
+  .band img,.gal__frame img{scale:1}
 }
 </style>
 
 <header class="hdr">
   <div class="wrap hdr__in">
-    <nav class="hdr__nav">
+    <div class="hdr__l">
+      <button class="burger" type="button" aria-label="Меню"><i></i><i></i><i></i></button>
       <a href="#collection">Каталог</a>
-      <a href="#about">О мастерской</a>
-      <a href="#materials">Материалы</a>
-    </nav>
-    <div class="hdr__mark">VOLNA</div>
-    <div class="hdr__end">
-      <button type="button">Поиск</button>
+      <a href="#terms">Условия</a>
+    </div>
+    <div class="hdr__logo">VOLNA</div>
+    <div class="hdr__r">
+      <div class="search">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+          <circle cx="5" cy="5" r="3.4"/><path d="M7.6 7.6 10.5 10.5"/>
+        </svg>
+        <label for="q" class="label" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Поиск</label>
+        <input id="q" type="search" placeholder="Поиск">
+      </div>
       <button type="button">Избранное</button>
-      <button type="button">Корзина (0)</button>
+      <button type="button">Корзина</button>
     </div>
   </div>
 </header>
 
 <main>
-  <!-- HERO -->
+  <!-- 1. HERO -->
   <section class="hero">
     <div class="wrap">
-      <div class="hero__top">
-        <div class="hero__claim">
+      <h1 class="mark" data-fit aria-label="VOLNA">
+        <span>V</span><span>O</span><span>L</span><span>N</span><span>A</span>
+      </h1>
+
+      <div class="rail">
+        <div class="rail__claim">
           <span>Спокойные формы</span>
           <span>Честные материалы</span>
           <span>Сборка вручную</span>
         </div>
-        <p class="hero__note">
-          Мебель, которая не спорит с комнатой. Массив ореха и дуба, ротанговое
-          полотно, шерстяное букле — и ничего лишнего.
-          <b>Мастерская, Санкт-Петербург — с 2019</b>
+        <img class="mini mini--chair" src="images/chair-cane-cutout.png" alt="Стул Плёс">
+        <img class="mini mini--table" src="images/table-pebble-cutout.png" alt="Стол Галька">
+        <img class="hero__seat" src="images/armchair-boucle-cutout.png" alt="Кресло Мыс">
+        <img class="mini mini--sofa" src="images/sofa-modular-cutout.png" alt="Диван Волна">
+        <p class="rail__note">
+          Мебель из массива. Санкт-Петербург, с 2019.<br>
+          <a href="#collection">Смотреть каталог</a>
         </p>
       </div>
-
-      <div class="stage">
-        <h1 class="mark" aria-label="VOLNA">
-          <span>V</span><span>O</span><span>L</span><span>N</span><span>A</span>
-        </h1>
-        <div class="stage__pieces">
-          <img class="piece piece--chair drift" data-speed="0.16"
-               src="images/chair-cane-cutout.png" alt="Стул Плёс из гнутого дуба с ротанговым полотном">
-          <img class="piece piece--armchair drift" data-speed="0.30"
-               src="images/armchair-boucle-cutout.png" alt="Кресло Мыс в шерстяном букле на ножках из ореха">
-          <img class="piece piece--table drift" data-speed="0.22"
-               src="images/table-pebble-cutout.png" alt="Журнальный стол Галька из массива ореха">
-        </div>
-      </div>
-      <div class="stage__base"></div>
-
-      <div class="filters">
-        <button class="pill" type="button" aria-pressed="true">Всё</button>
-        <button class="pill" type="button" aria-pressed="false">Диваны</button>
-        <button class="pill" type="button" aria-pressed="false">Кресла</button>
-        <button class="pill" type="button" aria-pressed="false">Столы</button>
-        <button class="pill" type="button" aria-pressed="false">Стулья</button>
-        <button class="pill" type="button" aria-pressed="false">Свет</button>
-        <span class="filters__spacer"></span>
-        <a class="pill pill--icon pill--solid" href="#collection">
-          <span class="pill__dot" aria-hidden="true">
-            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6">
-              <path d="M2.5 9.5 9.5 2.5M4 2.5h5.5V8"/>
-            </svg>
-          </span>
-          Смотреть каталог
-        </a>
-      </div>
     </div>
   </section>
 
-  <!-- COLLECTION -->
+  <!-- 2. NEW COLLECTION -->
   <section class="sec" id="collection">
     <div class="wrap">
-      <div class="sec__head">
-        <p class="eyebrow">Зима 2026</p>
-        <h2 class="section-title">Новая коллекция</h2>
-      </div>
-
-      <div class="grid">
+      <div class="sec__head"><h2 class="title">Новая коллекция</h2></div>
+      <div class="row">
         <article class="card">
-          <div class="card__plate">
-            <span class="card__tag">Букле</span>
-            <img src="images/armchair-boucle-cutout.png" alt="Кресло Мыс">
-          </div>
-          <div class="card__row">
-            <span class="card__name">Кресло «Мыс»</span>
-            <span class="card__price num">89 400 ₽</span>
-          </div>
-          <span class="card__meta num">84 × 78 × 72 см · орех, букле</span>
+          <div class="card__plate"><img src="images/armchair-boucle-cutout.png" alt="Кресло Мыс"></div>
+          <div class="card__foot"><span class="card__name">Кресло «Мыс»</span><span class="card__price num">89 400 ₽</span></div>
         </article>
-
         <article class="card">
-          <div class="card__plate">
-            <span class="card__tag">Массив</span>
-            <img src="images/table-pebble-cutout.png" alt="Стол Галька">
-          </div>
-          <div class="card__row">
-            <span class="card__name">Стол «Галька»</span>
-            <span class="card__price num">142 000 ₽</span>
-          </div>
-          <span class="card__meta num">96 × 82 × 34 см · массив ореха</span>
+          <div class="card__plate"><img src="images/table-pebble-cutout.png" alt="Стол Галька"></div>
+          <div class="card__foot"><span class="card__name">Стол «Галька»</span><span class="card__price num">142 000 ₽</span></div>
         </article>
-
         <article class="card">
-          <div class="card__plate">
-            <span class="card__tag">Ротанг</span>
-            <img src="images/chair-cane-cutout.png" alt="Стул Плёс">
-          </div>
-          <div class="card__row">
-            <span class="card__name">Стул «Плёс»</span>
-            <span class="card__price num">34 800 ₽</span>
-          </div>
-          <span class="card__meta num">46 × 52 × 86 см · гнутый дуб, ротанг</span>
+          <div class="card__plate"><img src="images/chair-cane-cutout.png" alt="Стул Плёс"></div>
+          <div class="card__foot"><span class="card__name">Стул «Плёс»</span><span class="card__price num">34 800 ₽</span></div>
         </article>
-
-        <article class="card card--wide">
-          <div class="card__plate">
-            <span class="card__tag">Модульный</span>
-            <img src="images/sofa-modular-cutout.png" alt="Диван Волна">
-          </div>
-          <div class="card__row">
-            <span class="card__name">Диван «Волна»</span>
-            <span class="card__price num">486 000 ₽</span>
-          </div>
-          <span class="card__meta num">312 × 168 × 74 см · 4 модуля</span>
+        <article class="card">
+          <div class="card__plate"><img src="images/sofa-modular-cutout.png" alt="Диван Волна"></div>
+          <div class="card__foot"><span class="card__name">Диван «Волна»</span><span class="card__price num">486 000 ₽</span></div>
         </article>
       </div>
     </div>
   </section>
 
-  <!-- ABOUT -->
-  <section class="sec" id="about">
+  <!-- 3. WHY US -->
+  <section class="sec" id="why">
     <div class="wrap">
-      <div class="sec__head">
-        <h2 class="section-title">О мастерской</h2>
-      </div>
-
-      <div class="about">
-        <div class="about__figure">
-          <div class="about__frame">
-            <img class="drift" data-speed="0.1" src="images/interior-dining.webp"
-                 alt="Обеденная группа VOLNA: круглый дубовый стол и два стула с ротангом у окна">
-          </div>
-          <div class="about__inset">
-            <img src="images/armchair-boucle-cutout.png" alt="Кресло Мыс, фрагмент">
-          </div>
-        </div>
-
-        <div class="about__body">
-          <p>
-            Мы начинали с одного станка в мастерской на Обводном и правила, которое
-            не поменялось: если деталь не выдерживает прикосновения вслепую — она не готова.
-          </p>
-          <p>
-            Доску сушим сами, 14 месяцев, до влажности 8 %. Это дольше и дороже
-            покупной сушки, но именно поэтому столешница не ведёт себя на тёплом полу
-            и в сухой квартире зимой.
-          </p>
-          <p>
-            Каркасы кресел собираем на шкантах и клиньях, без мебельного крепежа.
-            Ротанговое полотно плетём вручную — на одно сиденье уходит около шести часов.
-          </p>
-          <dl class="facts">
-            <div>
-              <dt class="num">14 мес.</dt>
-              <dd>Сушка массива</dd>
-            </div>
-            <div>
-              <dt class="num">4–6 нед.</dt>
-              <dd>Срок изготовления</dd>
-            </div>
-            <div>
-              <dt class="num">10 лет</dt>
-              <dd>Гарантия на каркас</dd>
-            </div>
-          </dl>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- BAND -->
-  <section class="sec" style="padding-block:0">
-    <div class="wrap">
-      <div class="band">
-        <img class="drift" data-speed="0.14" src="images/interior-dining.webp"
-             alt="Интерьер со столом и стульями VOLNA в утреннем свете">
-      </div>
-      <div class="band__line">
-        <p>Наши столяры вкладывают время и внимание в каждое соединение</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- MATERIALS -->
-  <section class="sec" id="materials">
-    <div class="wrap">
-      <div class="sec__head">
-        <h2 class="section-title">Материалы и сервис</h2>
+      <div class="bar">
+        <h2 class="title title--left">Почему нас выбирают</h2>
+        <span class="bar__gap"></span>
+        <button class="pill" type="button" aria-pressed="true">Производство</button>
+        <button class="pill" type="button" aria-pressed="false">Материалы</button>
+        <button class="pill" type="button" aria-pressed="false">Доставка</button>
       </div>
 
       <div class="bento">
-        <div class="bento__col">
+        <div class="stack">
           <div class="tile">
-            <h3>Массив ореха и дуба</h3>
-            <p>
-              Берём доску камерной сушки и досушиваем сами до 8 % влажности.
-              Торцы кроем маслом с воском — без плёнки и запаха.
-            </p>
-            <span class="tile__spec num">Влажность 8 % · масло Rubio Monocoat</span>
+            <h3>Своя сушильная камера</h3>
+            <p>Досушиваем доску 14 месяцев до влажности 8 %. Столешница не ведёт на тёплом полу.</p>
           </div>
-          <div class="tile tile--pair">
+          <div class="stack stack--2">
             <div class="tile">
-              <h3>Шерстяное букле</h3>
-              <p>78 % шерсть, 22 % полиамид. Стойкость к истиранию — 45 000 циклов.</p>
-              <span class="tile__spec num">12 оттенков</span>
+              <h3>Без мебельного крепежа</h3>
+              <p>Каркасы на шкантах и клиньях.</p>
             </div>
             <div class="tile">
-              <h3>Ротанговое полотно</h3>
-              <p>Натуральный ротанг, плетение «восьмёрка». Шесть часов на сиденье.</p>
-              <span class="tile__spec">Плетём вручную</span>
+              <h3>Ротанг вручную</h3>
+              <p>Шесть часов на одно сиденье.</p>
             </div>
           </div>
           <div class="tile">
-            <h3>Образцы тканей — бесплатно</h3>
-            <p>
-              Отправим набор из шести образцов букле и выкрасов дерева,
-              чтобы посмотреть их при своём свете до заказа.
-            </p>
-            <span class="tile__spec">Доставка по России 2–4 дня</span>
+            <h3>Образцы тканей бесплатно</h3>
+            <p>Шесть выкрасов дерева и букле — посмотреть при своём свете до заказа.</p>
           </div>
         </div>
 
-        <div class="bento__col">
+        <div class="stack">
           <div class="tile tile--photo">
             <img src="images/armchair-boucle.webp" alt="Кресло Мыс в студийном свете">
           </div>
           <div class="tile">
             <h3>3D-модели для проектов</h3>
-            <p>
-              Для дизайнеров — модели всей коллекции в .fbx, .3ds и .skp
-              с назначенными материалами. Ставятся в проект без доработки.
-            </p>
-            <span class="tile__spec">18 моделей · обновление раз в квартал</span>
+            <p>Вся коллекция в .fbx, .3ds и .skp с назначенными материалами.</p>
           </div>
-          <div class="tile">
-            <h3>Сборка и подъём</h3>
-            <p>
-              Привозим собранным. Заносим, ставим, забираем упаковку —
-              это входит в стоимость, а не считается отдельной услугой.
-            </p>
-            <span class="tile__spec">Москва и Санкт-Петербург</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. INTERIORS -->
+  <section class="sec" id="interiors">
+    <div class="wrap">
+      <div class="sec__head"><h2 class="title">В интерьере</h2></div>
+      <div class="gal">
+        <figure>
+          <div class="gal__frame"><img src="images/interior-dining.webp" alt="Обеденная группа у окна"></div>
+          <figcaption>
+            <h3>Обеденная</h3>
+            <p>Дубовый стол и стулья с ротангом</p>
+          </figcaption>
+        </figure>
+        <figure>
+          <div class="gal__frame"><img src="images/armchair-boucle.webp" alt="Кресло Мыс"></div>
+          <figcaption>
+            <h3>Кресло «Мыс»</h3>
+            <p>Букле и ножки из ореха</p>
+          </figcaption>
+        </figure>
+        <figure>
+          <div class="gal__frame"><img src="images/interior-dining.webp" alt="Свет в комнате со столом"></div>
+          <figcaption>
+            <h3>Утренний свет</h3>
+            <p>Массив дуба, лён, бетон</p>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. BAND -->
+  <section class="sec" style="padding-block:0">
+    <div class="wrap">
+      <div class="band"><img src="images/interior-dining.webp" alt="Интерьер с мебелью VOLNA"></div>
+      <p class="band__line">Мы делаем мебель, которая не спорит с комнатой</p>
+    </div>
+  </section>
+
+  <!-- 6. TERMS -->
+  <section class="sec" id="terms">
+    <div class="wrap">
+      <div class="sec__head"><h2 class="title title--left">Цены и условия</h2></div>
+      <div class="terms">
+        <div class="terms__photo"><img src="images/interior-dining.webp" alt="Мебель VOLNA в интерьере"></div>
+        <div class="terms__cols">
+          <div class="terms__col">
+            <span class="pill pill--solid">Частным клиентам</span>
+            <ul>
+              <li>Предоплата 50 %</li>
+              <li>Срок 4–6 недель</li>
+              <li>Доставка и подъём включены</li>
+              <li>Гарантия 10 лет на каркас</li>
+            </ul>
           </div>
+          <div class="terms__col">
+            <span class="pill pill--solid">Дизайнерам</span>
+            <ul>
+              <li>Агентские 15 %</li>
+              <li>3D-модели коллекции</li>
+              <li>Образцы тканей бесплатно</li>
+              <li>Изготовление по чертежам</li>
+            </ul>
+          </div>
+          <div class="terms__col">
+            <span class="pill pill--solid">Опт</span>
+            <ul>
+              <li>Прайс от 10 изделий</li>
+              <li>Скидка 5 % за наличные</li>
+              <li>Свой конструкторский отдел</li>
+              <li>Контент для сайта и соцсетей</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. CONTACT -->
+  <section class="sec contact" id="contact">
+    <div class="wrap">
+      <h2>Свяжитесь с нами — расчёт и подбор бесплатно</h2>
+      <div class="contact__row">
+        <a class="pill" href="tel:+78120000000"><span class="num">+7 812 000-00-00</span></a>
+        <a class="pill" href="mailto:hello@volna.ru">hello@volna.ru</a>
+        <a class="pill" href="#contact">@volna_mebel</a>
+      </div>
+      <div class="contact__shot">
+        <img src="images/interior-dining.webp" alt="Интерьер с мебелью VOLNA">
+        <div class="contact__pills">
+          <a class="pill pill--solid" href="#collection">Каталог</a>
+          <a class="pill" href="#why">О мастерской</a>
+          <a class="pill" href="#terms">Условия</a>
+          <a class="pill pill--icon pill--solid" href="#contact">
+            <span class="dot" aria-hidden="true">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 9.5 9.5 2.5M4 2.5h5.5V8"/></svg>
+            </span>
+            Написать
+          </a>
         </div>
       </div>
     </div>
@@ -669,53 +521,36 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
       <div>
         <h2>Расскажем, когда выйдет следующая коллекция</h2>
         <form class="sub" onsubmit="return false">
-          <label for="sub-mail" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Почта</label>
-          <input id="sub-mail" type="email" placeholder="Ваша почта" autocomplete="email">
+          <label for="mail" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Почта</label>
+          <input id="mail" type="email" placeholder="Ваша почта" autocomplete="email">
           <button type="submit" aria-label="Подписаться">
-            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6">
-              <path d="M2.5 9.5 9.5 2.5M4 2.5h5.5V8"/>
-            </svg>
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 9.5 9.5 2.5M4 2.5h5.5V8"/></svg>
           </button>
         </form>
       </div>
-
-      <div class="ftr__cols">
+      <div class="cols">
         <div>
           <h4>Каталог</h4>
-          <ul>
-            <li><a href="#collection">Диваны</a></li>
-            <li><a href="#collection">Кресла</a></li>
-            <li><a href="#collection">Столы</a></li>
-            <li><a href="#collection">Стулья</a></li>
-          </ul>
+          <ul><li><a href="#collection">Диваны</a></li><li><a href="#collection">Кресла</a></li><li><a href="#collection">Столы</a></li><li><a href="#collection">Стулья</a></li></ul>
         </div>
         <div>
           <h4>Бренд</h4>
-          <ul>
-            <li><a href="#about">Мастерская</a></li>
-            <li><a href="#materials">Материалы</a></li>
-            <li><a href="#materials">Дизайнерам</a></li>
-          </ul>
+          <ul><li><a href="#why">Мастерская</a></li><li><a href="#interiors">В интерьере</a></li><li><a href="#terms">Дизайнерам</a></li></ul>
         </div>
         <div>
           <h4>Контакты</h4>
-          <ul>
-            <li><a href="tel:+78120000000" class="num">+7 812 000-00-00</a></li>
-            <li><a href="mailto:hello@volna.ru">hello@volna.ru</a></li>
-            <li><a href="#">Telegram</a></li>
-          </ul>
+          <ul><li><a class="num" href="tel:+78120000000">+7 812 000-00-00</a></li><li><a href="mailto:hello@volna.ru">hello@volna.ru</a></li><li><a href="#contact">Telegram</a></li></ul>
         </div>
       </div>
     </div>
 
-    <div class="ftr__mark" aria-hidden="true">
+    <div class="ftr__mark" data-fit aria-hidden="true">
       <span>V</span><span>O</span><span>L</span><span>N</span><span>A</span>
     </div>
 
     <div class="ftr__base">
       <span>© 2026 VOLNA</span>
       <span>Санкт-Петербург, наб. Обводного канала 74</span>
-      <span>Прототип портфолио</span>
     </div>
   </div>
 </footer>
@@ -725,61 +560,79 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
 <script>
 (function () {
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var hasGsap = typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined';
+  /* Size each wordmark so its letters span the container edge to edge at their
+     natural tracking. The CSS clamp covers the no-JS case; without this the
+     letters would be spaced apart by whatever width the loaded face happens
+     to be. */
+  function fitMarks() {
+    document.querySelectorAll('[data-fit]').forEach(function (el) {
+      var box = el.clientWidth;
+      if (!box) return;
+      el.style.fontSize = '200px';
+      var natural = 0;
+      Array.prototype.forEach.call(el.children, function (c) {
+        natural += c.getBoundingClientRect().width;
+      });
+      el.style.fontSize = natural ? (200 * (box / natural) * 0.998) + 'px' : '';
+    });
+  }
+  fitMarks();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitMarks);
+  var t;
+  window.addEventListener('resize', function () {
+    clearTimeout(t);
+    t = setTimeout(fitMarks, 120);
+  });
 
-  /* category pills */
-  var pills = document.querySelectorAll('.filters .pill[aria-pressed]');
-  pills.forEach(function (p) {
-    p.addEventListener('click', function () {
-      pills.forEach(function (o) { o.setAttribute('aria-pressed', 'false'); });
-      p.setAttribute('aria-pressed', 'true');
+  var groups = document.querySelectorAll('.bar');
+  groups.forEach(function (bar) {
+    var pills = bar.querySelectorAll('.pill[aria-pressed]');
+    pills.forEach(function (p) {
+      p.addEventListener('click', function () {
+        pills.forEach(function (o) { o.setAttribute('aria-pressed', 'false'); });
+        p.setAttribute('aria-pressed', 'true');
+      });
     });
   });
 
-  if (reduced || !hasGsap) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (typeof window.gsap === 'undefined' || typeof window.ScrollTrigger === 'undefined') return;
 
   gsap.registerPlugin(ScrollTrigger);
 
-  /* smooth scroll, driven by gsap's ticker so ScrollTrigger stays in sync */
   if (typeof window.Lenis !== 'undefined') {
-    var lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+    var lenis = new Lenis({ duration: 1.05, smoothWheel: true });
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
     gsap.ticker.lagSmoothing(0);
   }
 
-  /* opening sequence: letters settle, then the pieces arrive on the baseline */
-  var intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
-  intro.from('.mark span', { yPercent: 26, duration: 1.05, stagger: 0.055 })
-       .from('.piece', { yPercent: 14, scale: 0.965, duration: 1.1, stagger: 0.09 }, '-=0.72')
-       .from('.hero__claim span, .hero__note', { y: 12, duration: 0.7, stagger: 0.05 }, '-=0.95')
-       .from('.filters > *', { y: 10, duration: 0.6, stagger: 0.035 }, '-=0.7');
+  /* opening: the wordmark settles, then the pieces land on the rail */
+  gsap.timeline({ defaults: { ease: 'power3.out' } })
+    .from('.mark span', { yPercent: 22, duration: 1, stagger: 0.05 })
+    .from('.hero__seat', { yPercent: 12, duration: 1 }, '-=0.6')
+    .from('.mini', { yPercent: 18, duration: .85, stagger: 0.06 }, '<')
+    .from('.rail__claim, .rail__note', { y: 10, duration: .7, stagger: .05 }, '-=0.75');
 
-  /* pieces drift up past the wordmark as the hero scrolls away */
-  gsap.utils.toArray('.stage .drift').forEach(function (el) {
-    gsap.to(el, {
-      yPercent: -22 * parseFloat(el.dataset.speed || 0.2) * 5,
-      ease: 'none',
-      scrollTrigger: { trigger: '.stage', start: 'top top', end: 'bottom top', scrub: true }
+  /* the seat drifts over the letters as the hero leaves */
+  gsap.to('.hero__seat', {
+    yPercent: -14, ease: 'none',
+    scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
+  });
+
+  /* parallax inside photo frames */
+  gsap.utils.toArray('.gal__frame img, .band img').forEach(function (el) {
+    gsap.fromTo(el, { yPercent: -4 }, {
+      yPercent: 4, ease: 'none',
+      scrollTrigger: { trigger: el.parentElement, start: 'top bottom', end: 'bottom top', scrub: true }
     });
   });
 
-  /* photo parallax inside its frame */
-  gsap.utils.toArray('.about__frame .drift, .band .drift').forEach(function (el) {
-    gsap.fromTo(el,
-      { yPercent: -5 },
-      {
-        yPercent: 5, ease: 'none',
-        scrollTrigger: { trigger: el.closest('.band, .about__frame'), start: 'top bottom', end: 'bottom top', scrub: true }
-      });
-  });
-
-  /* section entries: transform only, so everything stays readable without js */
-  gsap.utils.toArray('.grid .card, .tile, .about__body > *, .band__line p').forEach(function (el) {
+  /* transform-only entries, so nothing depends on js to be readable */
+  gsap.utils.toArray('.card, .tile, .gal figure, .terms__col, .band__line').forEach(function (el) {
     gsap.from(el, {
-      y: 26, duration: 0.9, ease: 'power3.out',
-      scrollTrigger: { trigger: el, start: 'top 92%', once: true }
+      y: 22, duration: .8, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 93%', once: true }
     });
   });
 })();
