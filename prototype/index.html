@@ -55,6 +55,11 @@ body{
   font-family:"Onest",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
+/* The phone wordmark deliberately runs past the right edge. `clip` crops it
+   without making the page a horizontal scroll container, which `hidden` on
+   body alone does not reliably do. */
+@supports (overflow-x:clip){:root,body{overflow-x:clip}}
+[hidden]{display:none!important}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 button,input{font:inherit;color:inherit;background:none;border:none}
@@ -102,30 +107,84 @@ input{caret-color:var(--accent)}
 .dot svg{width:10px;height:10px}
 
 /* ---------- header ---------- */
-.hdr{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(12px)}
-.hdr__in{display:flex;align-items:center;gap:18px;height:56px}
-.hdr__l,.hdr__r{display:flex;align-items:center;gap:18px;flex:1}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hdr{position:sticky;top:0;z-index:70;background:color-mix(in srgb,var(--ground) 90%,transparent);backdrop-filter:blur(12px)}
+.hdr__in{display:flex;align-items:center;gap:clamp(8px,1.6vw,18px);height:58px}
+.hdr__l,.hdr__r{display:flex;align-items:center;gap:clamp(6px,1.6vw,18px);flex:1;min-width:0}
 .hdr__r{justify-content:flex-end}
-.hdr a,.hdr button{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);transition:color .3s}
-.hdr a:hover,.hdr button:hover{color:var(--ink)}
-.burger{display:flex;flex-direction:column;gap:4px;width:17px}
-.burger i{height:1px;background:var(--ink);display:block}
+.hdr a{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);transition:color .3s}
+.hdr a:hover{color:var(--ink)}
 .hdr__logo{
   font-family:var(--display);font-weight:600;
-  font-size:14px;letter-spacing:.3em;padding-left:.3em;color:var(--ink);
+  font-size:14px;letter-spacing:.3em;padding-left:.3em;color:var(--ink);white-space:nowrap;
 }
+
+/* every header control clears the 44px touch target */
+.tap{
+  width:44px;height:44px;flex:0 0 44px;border-radius:999px;
+  display:grid;place-items:center;position:relative;color:var(--ink-2);
+  transition:color .3s var(--ease),background .3s var(--ease);
+}
+.tap:hover{color:var(--ink)}
+@media(hover:none){.tap:active{background:color-mix(in srgb,var(--line) 55%,transparent)}}
+/* two strokes, the lower one short — the mark the client picked */
+.burger{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;padding-left:11px}
+.burger i{
+  width:20px;height:1px;background:currentColor;display:block;color:var(--ink);
+  transform-origin:left center;transition:transform .35s var(--ease);
+}
+.burger i:nth-child(2){transform:scaleX(.65)}
+.hdr[data-menu="true"] .burger i{transform-origin:center}
+.hdr[data-menu="true"] .burger i:nth-child(1){transform:translateY(2.5px) rotate(45deg) scaleX(.85)}
+.hdr[data-menu="true"] .burger i:nth-child(2){transform:translateY(-2.5px) rotate(-45deg) scaleX(.85)}
+.ico svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ico__n{
+  position:absolute;top:5px;right:4px;
+  min-width:16px;height:16px;padding-inline:4px;border-radius:999px;
+  display:grid;place-items:center;font-size:10px;line-height:1;
+  background:var(--accent);color:var(--on-accent);
+  transition:scale .3s var(--ease);
+}
+.ico__n[data-empty="true"]{display:none}
+
 .search{
   display:flex;align-items:center;gap:7px;
-  border:1px solid var(--line);border-radius:999px;padding:5px 13px;width:190px;
+  border:1px solid var(--line);border-radius:999px;padding:7px 13px;width:190px;
 }
-.search input{width:100%;font-size:11.5px;padding:0}
+.search input{width:100%;font-size:12px;padding:0;min-width:0}
 .search input::placeholder{color:var(--ink-3)}
 .search input:focus{outline:none}
-.search svg{width:11px;height:11px;flex:0 0 11px;color:var(--ink-3)}
-@media(max-width:900px){.search{width:130px}}
-@media(max-width:720px){
-  .hdr__l a,.search,.hdr__r button:first-child{display:none}
-  .hdr__logo{flex:1}
+.search svg{width:14px;height:14px;flex:0 0 14px;color:var(--ink-3);fill:none;stroke:currentColor;stroke-width:1.5}
+#search-btn{display:none}
+@media(max-width:1000px){.search{width:140px}}
+
+/* off-canvas menu: secondary navigation, phone and tablet only */
+.menu{
+  position:fixed;left:0;right:0;top:58px;z-index:69;
+  max-height:calc(100dvh - 58px);overflow-y:auto;
+  box-shadow:0 24px 40px rgba(31,22,12,.10);
+  background:var(--surface);border-bottom:1px solid var(--line);
+  padding:12px var(--pad) 20px;
+  display:flex;flex-direction:column;
+}
+.menu a{
+  font-family:var(--display);font-size:19px;letter-spacing:.02em;text-transform:none;
+  color:var(--ink);padding-block:12px;border-bottom:1px solid var(--line);
+}
+.menu__foot{display:flex;flex-direction:column;gap:6px;padding-top:16px}
+.menu__foot a{font-family:inherit;font-size:14px;color:var(--ink-2);border:none;padding:0}
+
+@media(max-width:860px){
+  .hdr__l a{display:none}
+  .hdr__logo{flex:1;text-align:center}
+}
+@media(max-width:640px){
+  .search{display:none}
+  #search-btn{display:grid}
+}
+@media(min-width:861px){
+  .burger,.menu{display:none}
+  .hdr__l{gap:22px}
 }
 
 /* ---------- hero ---------- */
@@ -143,6 +202,10 @@ input{caret-color:var(--accent)}
   display:flex;align-items:flex-end;justify-content:space-between;
   gap:clamp(10px,2.2vw,30px);
   border-bottom:1px solid var(--line);padding-bottom:clamp(10px,1.4vw,18px);
+}
+.rail__pieces{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:clamp(10px,2.2vw,30px);flex:1;min-width:0;
 }
 .rail__claim{
   display:flex;flex-direction:column;gap:2px;flex:0 0 auto;
@@ -166,12 +229,42 @@ input{caret-color:var(--accent)}
   font-size:12px;color:var(--ink-2);
 }
 .rail__note a{color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:1px}
-@media(max-width:820px){
-  .rail{flex-wrap:wrap;justify-content:center}
-  .rail__claim{order:2;flex:1 1 100%;align-items:center;padding-top:14px}
-  .rail__note{order:3;margin:0 auto;text-align:center;max-width:34ch}
+
+/* Tablet: the text wraps under, and the pieces grow so the row stays tied to
+   the letters instead of drifting away from them. */
+@media(max-width:900px){
+  .rail{flex-wrap:wrap}
+  .rail__claim{order:2}
+  .rail__note{order:3;margin-bottom:0}
+  .rail__pieces{order:1;flex:1 1 100%}
+  .rail__claim,.rail__note{padding-top:16px;flex:1 1 auto;max-width:none}
+  .hero__seat{width:23vw;margin-top:-12vw}
+  .mini--chair{width:9vw}
+  .mini--table{width:11.5vw}
+  .mini--sofa{width:15vw}
 }
-@media(max-width:520px){.mini:nth-of-type(2){display:none}}
+
+/* Phone: the KANNO composition — pieces on their own line, then the wordmark
+   running off the right edge, then the claim. The mark is wider than the
+   column on purpose; body's overflow-x crops it. */
+@media(max-width:720px){
+  .hero .wrap{display:flex;flex-direction:column}
+  .mark{order:2;width:136%;justify-content:flex-start;gap:0;margin-top:-2vw}
+  .rail{display:contents}
+  .rail__pieces{
+    order:1;display:flex;align-items:flex-end;justify-content:space-between;
+    gap:10px;padding-bottom:6px;
+  }
+  .rail__claim{
+    order:3;align-items:flex-start;padding-top:16px;
+    border-top:1px solid var(--line);margin-top:14px;
+  }
+  .rail__note{order:4;text-align:left;max-width:none;padding-top:10px;margin:0}
+  .hero__seat{margin-top:0;width:34vw}
+  .mini--chair{width:15vw}
+  .mini--table{width:19vw}
+  .mini--sofa{width:25vw}
+}
 
 /* ---------- collection ---------- */
 .sec{padding-block:clamp(44px,5.6vw,80px)}
@@ -183,8 +276,7 @@ input{caret-color:var(--accent)}
 .sec__note{margin:0;font-size:13.5px;color:var(--ink-2);max-width:38ch;text-align:right}
 @media(max-width:700px){.sec__note{text-align:left}}
 .row{display:grid;gap:var(--gap);grid-template-columns:repeat(4,1fr)}
-@media(max-width:860px){.row{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:420px){.row{grid-template-columns:1fr}}
+@media(max-width:1000px){.row{grid-template-columns:repeat(2,1fr)}}
 
 .card__plate{
   position:relative;overflow:hidden;border-radius:var(--r);background:var(--plate);
@@ -428,6 +520,7 @@ input{caret-color:var(--accent)}
 .drawer[data-open="true"] .drawer__veil{opacity:1}
 .drawer__panel{
   position:absolute;inset-block:0;right:0;width:min(430px,100%);
+  padding-bottom:env(safe-area-inset-bottom);
   background:var(--surface);display:flex;flex-direction:column;
   transform:translateX(100%);transition:transform .5s var(--ease);
   box-shadow:-24px 0 60px rgba(31,22,12,.18);
@@ -491,6 +584,28 @@ input{caret-color:var(--accent)}
 .drawer__go:hover{background:var(--accent);color:var(--on-accent)}
 .drawer__go:disabled{background:var(--line);color:var(--ink-3);cursor:not-allowed}
 
+/* ---------- phone and tablet adjustments ---------- */
+@media(max-width:900px){
+  .sec__note{text-align:left;flex:1 1 100%;max-width:52ch}
+  .sec__head{align-items:flex-start;gap:10px}
+}
+@media(max-width:720px){
+  .sec{padding-block:clamp(38px,9vw,56px)}
+  .title{font-size:clamp(26px,7.6vw,34px)}
+  .band__line{max-width:none;font-size:clamp(19px,5.6vw,26px)}
+  .contact h2{font-size:clamp(24px,7vw,32px)}
+  .craft__say{max-width:none}
+  .drawer__panel{width:100%}
+  .line{grid-template-columns:56px 1fr auto;gap:12px}
+  /* touch has no hover, so the row controls are always on show */
+  .card__add{opacity:1;translate:0 0}
+}
+@media(max-width:480px){
+  .facts{grid-template-columns:1fr 1fr;gap:14px 16px}
+  .ftr__cols{grid-template-columns:1fr 1fr;gap:22px}
+  .fontbar{left:8px;right:8px;bottom:8px;justify-content:center}
+}
+
 /* temporary: lets the client compare display faces on the real page */
 .fontbar{
   position:fixed;left:14px;bottom:14px;z-index:90;
@@ -518,24 +633,51 @@ input{caret-color:var(--accent)}
 <header class="hdr">
   <div class="wrap hdr__in">
     <div class="hdr__l">
-      <button class="burger" type="button" aria-label="Меню"><i></i><i></i><i></i></button>
+      <button class="tap burger" type="button" id="menu-btn" aria-expanded="false" aria-controls="menu" aria-label="Меню">
+        <i></i><i></i>
+      </button>
       <a href="#collection">Коллекция</a>
       <a href="#price">Каталог</a>
     </div>
+
     <div class="hdr__logo">VOLNA</div>
+
     <div class="hdr__r">
       <div class="search">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
-          <circle cx="5" cy="5" r="3.4"/><path d="M7.6 7.6 10.5 10.5"/>
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="8.6" cy="8.6" r="5.4"/><path d="M12.6 12.6 17 17"/>
         </svg>
-        <label for="q" class="label" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Поиск</label>
+        <label for="q" class="vh">Поиск</label>
         <input id="q" type="search" placeholder="Поиск">
       </div>
-      <button type="button" id="fav-btn">Избранное <span class="hdr__count" id="fav-count" data-empty="true">0</span></button>
-      <button type="button" id="cart-btn">Корзина <span class="hdr__count" id="cart-count" data-empty="true">0</span></button>
+
+      <button class="tap ico" type="button" id="search-btn" aria-label="Поиск"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.6" cy="8.6" r="5.4"/><path d="M12.6 12.6 17 17"/></svg></button>
+
+      <button class="tap ico" type="button" id="fav-btn" aria-label="Избранное">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.6S3 12.4 3 7.9A3.8 3.8 0 0 1 10 5.7a3.8 3.8 0 0 1 7 2.2c0 4.5-7 8.7-7 8.7Z"/></svg>
+        <span class="ico__n num" id="fav-count" data-empty="true">0</span>
+      </button>
+
+      <button class="tap ico" type="button" id="cart-btn" aria-label="Корзина">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.4 6.5h11.2l-.9 10a1 1 0 0 1-1 .9H6.3a1 1 0 0 1-1-.9Z"/><path d="M7.3 8.4V5.6a2.7 2.7 0 0 1 5.4 0v2.8"/></svg>
+        <span class="ico__n num" id="cart-count" data-empty="true">0</span>
+      </button>
     </div>
   </div>
+
 </header>
+
+<nav class="menu" id="menu" hidden>
+    <a href="#collection">Коллекция</a>
+    <a href="#price">Каталог</a>
+    <a href="#spec">Как это сделано</a>
+    <a href="#interiors">В интерьере</a>
+    <a href="#contact">Мастерская</a>
+    <div class="menu__foot">
+      <a class="num" href="tel:+78120000000">+7 812 000-00-00</a>
+      <a href="mailto:hello@volna.ru">hello@volna.ru</a>
+    </div>
+  </nav>
 
 <main>
   <!-- 1. HERO -->
@@ -551,10 +693,12 @@ input{caret-color:var(--accent)}
           <span>Честные материалы</span>
           <span>Сборка вручную</span>
         </div>
-        <img class="mini mini--chair" src="images/chair-cane-cutout.png" alt="Стул Плёс">
-        <img class="mini mini--table" src="images/table-pebble-cutout.png" alt="Стол Галька">
-        <img class="hero__seat" src="images/armchair-boucle-cutout.png" alt="Кресло Мыс">
-        <img class="mini mini--sofa" src="images/sofa-modular-cutout.png" alt="Диван Волна">
+        <div class="rail__pieces">
+          <img class="mini mini--chair" src="images/chair-cane-cutout.png" alt="Стул Плёс">
+          <img class="mini mini--table" src="images/table-pebble-cutout.png" alt="Стол Галька">
+          <img class="hero__seat" src="images/armchair-boucle-cutout.png" alt="Кресло Мыс">
+          <img class="mini mini--sofa" src="images/sofa-modular-cutout.png" alt="Диван Волна">
+        </div>
         <p class="rail__note">
           Мебель из массива. Санкт-Петербург, с 2019.<br>
           <a href="#collection">Смотреть каталог</a>
@@ -1103,8 +1247,34 @@ input{caret-color:var(--accent)}
     if (lastTrigger) lastTrigger.focus();
   }
 
-  document.getElementById('cart-btn').addEventListener('click', function () { openDrawer('cart', this); });
-  document.getElementById('fav-btn').addEventListener('click', function () { openDrawer('fav', this); });
+  /* off-canvas menu */
+  var hdr = document.querySelector('.hdr');
+  var menuBtn = document.getElementById('menu-btn');
+  var menu = document.getElementById('menu');
+  function setMenu(open) {
+    menu.hidden = !open;
+    hdr.dataset.menu = String(open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+  }
+  menuBtn.addEventListener('click', function () { setMenu(menu.hidden); });
+  menu.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () { setMenu(false); });
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && !menu.hidden) { setMenu(false); menuBtn.focus(); }
+  });
+  /* the menu is desktop-irrelevant: close it if the viewport grows past it */
+  var wide = window.matchMedia('(min-width: 861px)');
+  wide.addEventListener('change', function (e) { if (e.matches) setMenu(false); });
+
+  document.getElementById('search-btn').addEventListener('click', function () {
+    setMenu(true);
+    var field = document.getElementById('q');
+    if (field) field.focus();
+  });
+
+  document.getElementById('cart-btn').addEventListener('click', function () { setMenu(false); openDrawer('cart', this); });
+  document.getElementById('fav-btn').addEventListener('click', function () { setMenu(false); openDrawer('fav', this); });
   el.drawer.querySelectorAll('[data-tab]').forEach(function (b) {
     b.addEventListener('click', function () { showTab(b.dataset.tab); });
   });
