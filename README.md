@@ -16,11 +16,12 @@ docs/
 
 ## Как выложить
 
+Сайт уже лежит в `main`. Осталось выбрать, где его показывать.
+
 ### GitHub Pages — бесплатно, прямо из этого репозитория
 
-1. Слить ветку `claude/bold-cray-btmog0` в `main`.
-2. Settings → Pages.
-3. Source: **Deploy from a branch**, Branch: **main**, папка: **/docs**. Save.
+Settings → Pages → Source: **Deploy from a branch**, Branch: **main**,
+папка: **/docs** → Save.
 
 Через пару минут сайт будет на `https://bonifirmaarm-design.github.io/mebel/`.
 
