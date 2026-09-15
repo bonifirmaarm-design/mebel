@@ -1635,6 +1635,67 @@ mark{background:color-mix(in srgb,var(--accent) 20%,transparent);color:inherit;b
     yPercent: 4, ease: 'none',
     scrollTrigger: { trigger: '.band', start: 'top bottom', end: 'bottom top', scrub: true }
   });
+
+  /* ---- blocks arriving ---------------------------------------------------
+     Every block comes in as it is reached. Two gestures, not one: words and
+     controls rise, photographs are uncovered from the top down. The hidden
+     state is set here rather than in the stylesheet, and only for blocks
+     below the first screen, so nothing is ever left invisible to a reader
+     whose scripts never run — and what is already on screen simply stays. */
+  function pending(nodes) {
+    return Array.prototype.filter.call(nodes, function (n) {
+      return n.getBoundingClientRect().top > window.innerHeight * 0.92;
+    });
+  }
+
+  function rise(selector, opts) {
+    opts = opts || {};
+    var nodes = pending(document.querySelectorAll(selector));
+    if (!nodes.length) return;
+    gsap.set(nodes, { y: opts.y || 32, opacity: 0 });
+    gsap.to(nodes, {
+      y: 0, opacity: 1,
+      duration: opts.duration || 0.85,
+      ease: 'expo.out',
+      stagger: opts.stagger === undefined ? 0.07 : opts.stagger,
+      scrollTrigger: { trigger: opts.trigger || nodes[0], start: 'top 88%', once: true }
+    });
+  }
+
+  /* a frame is uncovered downwards, so the photograph reads as revealed
+     rather than faded in */
+  function uncover(selector, opts) {
+    opts = opts || {};
+    var nodes = pending(document.querySelectorAll(selector));
+    if (!nodes.length) return;
+    nodes.forEach(function (node) {
+      gsap.fromTo(node,
+        { clipPath: 'inset(0% 0% 100% 0%)' },
+        {
+          clipPath: 'inset(0% 0% 0% 0%)',
+          duration: opts.duration || 1.05,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: node, start: 'top 88%', once: true },
+          onComplete: function () { node.style.clipPath = ''; }
+        });
+    });
+  }
+
+  [['#collection', '.card', 0.07], ['#price', '.lot', 0.06]].forEach(function (g) {
+    rise(g[0] + ' ' + g[1], { stagger: g[2], trigger: g[0] + ' ' + g[1] });
+  });
+  rise('.sec__head > *', { stagger: 0.06, y: 26 });
+  rise('.craft__say', { y: 30 });
+  rise('.facts > div', { stagger: 0.05, y: 24 });
+  rise('.gal figcaption', { stagger: 0.09, y: 18, duration: 0.7 });
+  rise('.band__line', { y: 26 });
+  rise('.contact__grid > *', { stagger: 0.08, y: 28 });
+  rise('.ftr__top, .ftr__base', { stagger: 0.08, y: 24 });
+
+  uncover('.craft__shot');
+  uncover('.gal__frame');
+  uncover('.band');
+  uncover('.contact__shot');
 })();
 </script>
 </body>
